@@ -138,55 +138,57 @@ class ApiClient {
 
 /* ==================================
   AUTH & SESSION MANAGEMENT
-===================================== */
+ ===================================== */
 async function checkAuth() {
-  const session = await getSession();
-  const overlay = document.getElementById('view-login');
-  if (session) {
-    currentUser = session.user;
-    currentProfile = await getMyProfile();
-    if (overlay) overlay.classList.add('hidden');
-    applyPermissions();
-    initDashboard();
-  } else {
-    if (overlay) overlay.classList.remove('hidden');
+  try {
+    const session = await getSession();
+    const overlay = document.getElementById('view-login');
+    
+    if (session) {
+      console.log('Sesión activa:', session.user.email);
+      currentUser = session.user;
+      
+      try {
+        currentProfile = await getMyProfile();
+        console.log('Perfil cargado:', currentProfile);
+      } catch (pErr) {
+        console.error('Error cargando perfil:', pErr);
+      }
+      
+      if (overlay) overlay.classList.add('hidden');
+      applyPermissions();
+      initDashboard();
+    } else {
+      console.log('Sin sesión activa');
+      if (overlay) overlay.classList.remove('hidden');
+    }
+  } catch (err) {
+    console.error('Error en checkAuth:', err);
   }
 }
 
 function applyPermissions() {
   if (!currentProfile) return;
   
-  // Mostrar/Ocultar admin tools
-  if (currentProfile.is_admin) {
-    document.getElementById('admin-tools').classList.remove('hidden');
-  } else {
-    document.getElementById('admin-tools').classList.add('hidden');
+  const adminTools = document.getElementById('admin-tools');
+  if (adminTools) {
+    if (currentProfile.is_admin) adminTools.classList.remove('hidden');
+    else adminTools.classList.add('hidden');
   }
 
-  // Filtrar botones por data-perm
   document.querySelectorAll('.auth-required').forEach(btn => {
     const perm = btn.getAttribute('data-perm');
-    if (perm === 'any') return;
+    if (!perm || perm === 'any') return;
     
-    if (perm === 'stock' && !currentProfile.permiso_stock) btn.classList.add('hidden');
-    else if (perm === 'carga_trabajo' && !currentProfile.permiso_carga_trabajo) btn.classList.add('hidden');
-    else if (perm === 'carga_manual' && !currentProfile.permiso_carga_manual) btn.classList.add('hidden');
+    let hasPerm = true;
+    if (perm === 'stock' && !currentProfile.permiso_stock) hasPerm = false;
+    else if (perm === 'carga_trabajo' && !currentProfile.permiso_carga_trabajo) hasPerm = false;
+    else if (perm === 'carga_manual' && !currentProfile.permiso_carga_manual) hasPerm = false;
+    
+    if (!hasPerm) btn.classList.add('hidden');
     else btn.classList.remove('hidden');
   });
 }
-
-document.getElementById('login-form').onsubmit = async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const pass = document.getElementById('login-password').value;
-  try {
-    await signIn(email, pass);
-    showToast('Sesión iniciada correctamente');
-    checkAuth();
-  } catch (err) {
-    showToast(err.message, 'error');
-  }
-};
 
 async function handleLogout() {
   await signOut();
@@ -619,6 +621,11 @@ function initEventListeners() {
         }
         await signIn(email, pass);
         showToast('Sesión iniciada correctamente');
+        
+        // Ocultar login inmediatamente para dar feedback visual
+        const overlay = document.getElementById('view-login');
+        if (overlay) overlay.classList.add('hidden');
+        
         await checkAuth();
       } catch (err) {
         showToast(err.message, 'error');

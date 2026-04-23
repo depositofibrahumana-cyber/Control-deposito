@@ -28,18 +28,28 @@ async function sbFetch(endpoint, options = {}) {
     ...(options.headers || {})
   };
 
-  const res = await fetch(url, { ...options, headers });
-  if (!res.ok) {
+  console.log(`[Supabase Call] ${options.method || 'GET'} ${url}`);
+
+  try {
+    const res = await fetch(url, { ...options, headers });
+    if (!res.ok) {
+      const text = await res.text();
+      let errorMsg = text;
+      try { 
+        const json = JSON.parse(text);
+        errorMsg = json.msg || json.message || json.error_description || text;
+      } catch(e) {}
+      throw new Error(`Supabase error [${res.status}]: ${errorMsg}`);
+    }
     const text = await res.text();
-    let errorMsg = text;
-    try { 
-      const json = JSON.parse(text);
-      errorMsg = json.msg || json.message || text;
-    } catch(e) {}
-    throw new Error(`Supabase error [${res.status}]: ${errorMsg}`);
+    return text ? JSON.parse(text) : [];
+  } catch (err) {
+    console.error('[Supabase Fetch Error]', err);
+    if (err.message.includes('Failed to fetch')) {
+      throw new Error('Error de conexión: No se pudo conectar con el servidor de Supabase. Revisa tu conexión a internet.');
+    }
+    throw err;
   }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
 }
 
 // ─────────────────────────────────────────────
