@@ -599,18 +599,76 @@ async function handleFile(file) {
 // Cierre de sesión y modals
 window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
 
-document.getElementById('movForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const res = await ApiClient.submitMovimiento({
-    tipo: document.getElementById('movTipo').value,
-    cantidad: document.getElementById('movCant').value
-  });
-  if(res.success) {
-    showToast(res.message);
-    closeModal('movModal');
-    initDashboard();
-  } else showToast(res.message, 'error');
-};
+// ─────────────────────────────────────────────
+// INITIALIZATION & EVENT LISTENERS
+// ─────────────────────────────────────────────
+
+function initEventListeners() {
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      
+      try {
+        if (submitBtn) {
+           submitBtn.disabled = true;
+           submitBtn.innerText = 'Verificando...';
+        }
+        await signIn(email, pass);
+        showToast('Sesión iniciada correctamente');
+        await checkAuth();
+      } catch (err) {
+        showToast(err.message, 'error');
+        if (submitBtn) {
+           submitBtn.disabled = false;
+           submitBtn.innerText = 'Iniciar Sesión';
+        }
+      }
+    };
+  }
+
+  const movForm = document.getElementById('movForm');
+  if (movForm) {
+    movForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const res = await ApiClient.submitMovimiento({
+        tipo: document.getElementById('movTipo').value,
+        cantidad: document.getElementById('movCant').value
+      });
+      if(res.success) {
+        showToast(res.message);
+        closeModal('movModal');
+        initDashboard();
+      } else showToast(res.message, 'error');
+    };
+  }
+
+  const stockMoveForm = document.getElementById('stock-move-form');
+  if (stockMoveForm) {
+    stockMoveForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const mov = {
+        sku: document.getElementById('sm-sku').value,
+        tipo: document.getElementById('sm-tipo').value,
+        cantidad: document.getElementById('sm-cantidad').value,
+        deposito_origen: document.getElementById('sm-origen').value,
+        deposito_destino: document.getElementById('sm-destino').value
+      };
+      try {
+        await insertStockMovimiento(mov);
+        showToast('Movimiento registrado correctamente');
+        e.target.reset();
+        toggleStockFormFields();
+        searchStock();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+  }
+}
 
 // Reloj
 setInterval(() => {
@@ -632,6 +690,9 @@ async function initDashboard() {
 
 // INICIAR TODO
 (function() {
-  checkAuth();
+  window.addEventListener('DOMContentLoaded', () => {
+    initEventListeners();
+    checkAuth();
+  });
 })();
 
