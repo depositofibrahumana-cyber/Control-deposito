@@ -32,6 +32,15 @@ async function sbFetch(endpoint, options = {}) {
 
   try {
     const res = await fetch(url, { ...options, headers });
+    
+    if (res.status === 401 && !isAuth) {
+      // Token expirado o inválido: limpiar sesión y forzar relogin
+      console.warn('Token expirado (401). Limpiando sesión...');
+      await signOut();
+      window.location.reload();
+      return [];
+    }
+
     if (!res.ok) {
       const text = await res.text();
       let errorMsg = text;
@@ -46,7 +55,7 @@ async function sbFetch(endpoint, options = {}) {
   } catch (err) {
     console.error('[Supabase Fetch Error]', err);
     if (err.message.includes('Failed to fetch')) {
-      throw new Error('Error de conexión: No se pudo conectar con el servidor de Supabase. Revisa tu conexión a internet.');
+      throw new Error('Error de conexión: No se pudo conectar con el servidor. Revisa tu conexión a internet.');
     }
     throw err;
   }

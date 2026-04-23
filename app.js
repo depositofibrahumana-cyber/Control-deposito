@@ -56,7 +56,7 @@ async function syncFromSupabase() {
     return true;
   } catch (err) {
     console.error('Error sincronizando desde Supabase:', err);
-    showToast('⚠️ Error de conexión con la base de datos', 'error');
+    showToast('⚠️ Error de DB: ' + (err.message || 'Desconocido'), 'error');
     return false;
   }
 }
