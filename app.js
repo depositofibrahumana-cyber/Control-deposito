@@ -141,14 +141,15 @@ class ApiClient {
 ===================================== */
 async function checkAuth() {
   const session = await getSession();
+  const overlay = document.getElementById('view-login');
   if (session) {
     currentUser = session.user;
     currentProfile = await getMyProfile();
-    document.getElementById('view-login').classList.add('hidden');
+    if (overlay) overlay.classList.add('hidden');
     applyPermissions();
     initDashboard();
   } else {
-    document.getElementById('view-login').classList.remove('hidden');
+    if (overlay) overlay.classList.remove('hidden');
   }
 }
 
