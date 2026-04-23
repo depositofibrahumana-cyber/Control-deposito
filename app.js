@@ -606,6 +606,14 @@ window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.cla
 // ─────────────────────────────────────────────
 
 function initEventListeners() {
+  // Verificar localStorage
+  try {
+    localStorage.setItem('test', '1');
+    localStorage.removeItem('test');
+  } catch (e) {
+    alert('⚠️ ERROR: Tu navegador tiene bloqueado el almacenamiento local (LocalStorage). Esto impedirá que inicies sesión. Revisa la configuración de privacidad.');
+  }
+
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
     loginForm.onsubmit = async (e) => {
@@ -619,16 +627,24 @@ function initEventListeners() {
            submitBtn.disabled = true;
            submitBtn.innerText = 'Verificando...';
         }
-        await signIn(email, pass);
+        
+        console.log('Iniciando signIn para:', email);
+        const data = await signIn(email, pass);
+        console.log('SignIn exitoso:', data);
+        
+        if (!data.access_token) {
+          throw new Error('No se recibió un token de acceso válido.');
+        }
+
         showToast('Sesión iniciada correctamente');
         
-        // Ocultar login inmediatamente para dar feedback visual
         const overlay = document.getElementById('view-login');
         if (overlay) overlay.classList.add('hidden');
         
         await checkAuth();
       } catch (err) {
-        showToast(err.message, 'error');
+        console.error('Error fatal en login:', err);
+        alert('❌ Error al iniciar sesión: ' + err.message);
         if (submitBtn) {
            submitBtn.disabled = false;
            submitBtn.innerText = 'Iniciar Sesión';
