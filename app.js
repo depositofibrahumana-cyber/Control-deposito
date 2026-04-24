@@ -140,11 +140,6 @@ class ApiClient {
 }
 
 async function syncDrive(isAuto = false) {
-  if (!currentProfile?.permiso_carga_trabajo) {
-    if (!isAuto) showToast('Sin permisos para sincronizar Drive.', 'error');
-    return;
-  }
-  
   if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
   const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
   
@@ -206,15 +201,17 @@ async function checkAuth() {
 }
 
 function applyPermissions() {
-  if (!currentProfile) return;
-  
   const adminTools = document.getElementById('admin-tools');
   if (adminTools) {
-    if (currentProfile.is_admin) adminTools.classList.remove('hidden');
+    if (currentProfile?.is_admin) adminTools.classList.remove('hidden');
     else adminTools.classList.add('hidden');
   }
 
   document.querySelectorAll('.auth-required').forEach(btn => {
+    if (!currentProfile) {
+      btn.classList.add('hidden');
+      return;
+    }
     const perm = btn.getAttribute('data-perm');
     if (!perm || perm === 'any') return;
     
