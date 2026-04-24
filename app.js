@@ -186,6 +186,7 @@ async function checkAuth() {
         console.log('Perfil cargado:', currentProfile);
       } catch (pErr) {
         console.error('Error cargando perfil:', pErr);
+        alert('Error fatal cargando permisos del perfil: ' + pErr.message + '\nContacta al soporte.');
       }
       
       if (overlay) overlay.classList.add('hidden');
@@ -209,7 +210,10 @@ function applyPermissions() {
 
   document.querySelectorAll('.auth-required').forEach(btn => {
     if (!currentProfile) {
-      btn.classList.add('hidden');
+      // Si no hay perfil, ocultamos todo EXCEPTO cerrar sesión
+      if (!btn.innerText.includes('Cerrar Sesión') && !btn.innerText.includes('Dashboard')) {
+         btn.classList.add('hidden');
+      }
       return;
     }
     const perm = btn.getAttribute('data-perm');
