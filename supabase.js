@@ -120,11 +120,18 @@ async function getOrCreateJornada(targetDate = null) {
   const rows = await sbFetch(`jornadas?fecha=eq.${dateToFetch}&limit=1`, { method: 'GET' });
   if (rows.length > 0) return rows[0];
 
-  const created = await sbFetch('jornadas', {
-    method: 'POST',
-    body: JSON.stringify({ fecha: dateToFetch })
-  });
-  return Array.isArray(created) ? created[0] : created;
+  try {
+    const created = await sbFetch('jornadas', {
+      method: 'POST',
+      body: JSON.stringify({ fecha: dateToFetch })
+    });
+    return Array.isArray(created) ? created[0] : created;
+  } catch (err) {
+    // Si hubo una carrera y alguien más lo creó
+    const rowsRetry = await sbFetch(`jornadas?fecha=eq.${dateToFetch}&limit=1`, { method: 'GET' });
+    if (rowsRetry.length > 0) return rowsRetry[0];
+    throw err;
+  }
 }
 
 async function getDashboardData(targetDate = null) {
