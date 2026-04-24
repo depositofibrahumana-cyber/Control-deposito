@@ -147,6 +147,11 @@ async function syncDrive(isAuto = false) {
   
   if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
   const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
+  const syncBtn = document.querySelector('button[onclick="syncDrive()"]');
+  if (syncBtn) {
+    syncBtn.disabled = true;
+    syncBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sincronizando...';
+  }
   const activeDate = document.getElementById('dashboard-date')?.value;
   const bodyData = !isAuto && activeDate ? JSON.stringify({ date: activeDate }) : JSON.stringify({});
   
@@ -754,17 +759,22 @@ async function initDashboard() {
   
   const dateInput = document.getElementById('dashboard-date');
   if (dateInput) {
-    dateInput.value = new Date().toISOString().slice(0, 10);
+    if (!dateInput.value) {
+      dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+    
     dateInput.addEventListener('change', async (e) => {
-      showToast('Cargando jornada...', 'info');
-      const targetDate = e.target.value;
-      const res = await ApiClient.getDashboard(targetDate);
+      console.log('Fecha seleccionada:', e.target.value);
+      const res = await ApiClient.getDashboard(e.target.value);
+      console.log('Respuesta Dashboard:', res);
       if (res.success) updateDashboardUI(res.data);
     });
+    
+    // Carga inicial
+    const res = await ApiClient.getDashboard(dateInput.value);
+    console.log('Carga inicial Dashboard:', res);
+    if (res.success) updateDashboardUI(res.data);
   }
-
-  const res = await ApiClient.getDashboard();
-  if (res.success) updateDashboardUI(res.data);
   
   // Polling del dashboard cada 30 segundos
   setInterval(async () => {
