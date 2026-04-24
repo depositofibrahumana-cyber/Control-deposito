@@ -147,6 +147,8 @@ async function syncDrive(isAuto = false) {
   
   if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
   const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
+  const activeDate = document.getElementById('dashboard-date')?.value;
+  const bodyData = !isAuto && activeDate ? JSON.stringify({ date: activeDate }) : JSON.stringify({});
   
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/procesar-etiquetas-drive`, {
@@ -154,7 +156,8 @@ async function syncDrive(isAuto = false) {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      body: bodyData
     });
     
     const data = await res.json();
