@@ -140,6 +140,11 @@ class ApiClient {
 }
 
 async function syncDrive(isAuto = false) {
+  if (!currentProfile?.is_admin && !currentProfile?.permiso_carga_trabajo) {
+    if (isAuto !== true) showToast('Sin permisos para sincronizar Drive.', 'error');
+    return;
+  }
+  
   if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
   const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
   
