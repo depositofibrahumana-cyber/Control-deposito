@@ -5,7 +5,7 @@
 
 // Estado en memoria
 let appData = {
-  envios:      { colecta: 0, flex: 0, turbo: 0, andreani: 0 },
+  envios:      { tiendanube: 0, full: 0, manuales: 0, colecta: 0, flex: 0, turbo: 0, andreani: 0 },
   errores:     { informados: 0 },
   movimientos: { interdeposito: 0, retiros: 0, itemsDiferentes: 0, detalles: [] }
 };
@@ -23,15 +23,18 @@ let jornadaActual = null;
 // ─────────────────────────────────────────────
 // Sincronizar datos desde Supabase → appData
 // ─────────────────────────────────────────────
-async function syncFromSupabase() {
+async function syncFromSupabase(targetDate = null) {
   try {
-    const { jornada, detalles, histEnvios, histErrores } = await getDashboardData();
+    const { jornada, detalles, histEnvios, histErrores } = await getDashboardData(targetDate);
     jornadaActual = jornada;
 
-    appData.envios.colecta      = jornada.colecta;
-    appData.envios.flex         = jornada.flex;
-    appData.envios.turbo        = jornada.turbo;
-    appData.envios.andreani     = jornada.andreani;
+    appData.envios.tiendanube   = jornada.tiendanube || 0;
+    appData.envios.full         = jornada.full_envios || 0;
+    appData.envios.manuales     = jornada.manuales || 0;
+    appData.envios.colecta      = jornada.colecta || 0;
+    appData.envios.flex         = jornada.flex || 0;
+    appData.envios.turbo        = jornada.turbo || 0;
+    appData.envios.andreani     = jornada.andreani || 0;
     appData.errores.informados  = jornada.errores;
     appData.movimientos.interdeposito   = jornada.interdeposito;
     appData.movimientos.retiros         = jornada.retiros;
@@ -65,8 +68,8 @@ async function syncFromSupabase() {
   CLIENTE API (Supabase Integration)
 ===================================== */
 class ApiClient {
-  static async getDashboard() {
-    await syncFromSupabase();
+  static async getDashboard(targetDate = null) {
+    await syncFromSupabase(targetDate);
     return { success: true, data: JSON.parse(JSON.stringify(appData)) };
   }
 
@@ -136,9 +139,44 @@ class ApiClient {
   }
 }
 
+async function syncDrive(isAuto = false) {
+  if (!currentProfile?.permiso_carga_trabajo) {
+    if (!isAuto) showToast('Sin permisos para sincronizar Drive.', 'error');
+    return;
+  }
+  
+  if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
+  const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/procesar-etiquetas-drive`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error en Edge Function');
+    
+    if (!isAuto || data.nuevasHojas > 0) {
+      showToast(data.message, 'success');
+    }
+    
+    // Si se sumaron hojas, refrescamos el dashboard
+    if (data.nuevasHojas > 0) {
+      await ApiClient.getDashboard();
+    }
+  } catch (err) {
+    console.error('Error Drive Sync:', err);
+    if (!isAuto) showToast('⚠️ Error: ' + err.message, 'error');
+  }
+}
+
 /* ==================================
   AUTH & SESSION MANAGEMENT
- ===================================== */
+==================================== */
 async function checkAuth() {
   try {
     const session = await getSession();
@@ -262,13 +300,16 @@ function updateDashboardUI(data) {
     }
   };
 
-  anim('kpi-colecta',  data.envios.colecta);
-  anim('kpi-flex',     data.envios.flex);
-  anim('kpi-turbo',    data.envios.turbo);
-  anim('kpi-andreani', data.envios.andreani);
-  anim('kpi-errores',  data.errores.informados);
+  anim('kpi-tiendanube', data.envios.tiendanube);
+  anim('kpi-full',       data.envios.full);
+  anim('kpi-manuales',   data.envios.manuales);
+  anim('kpi-colecta',    data.envios.colecta);
+  anim('kpi-flex',       data.envios.flex);
+  anim('kpi-turbo',      data.envios.turbo);
+  anim('kpi-andreani',   data.envios.andreani);
+  anim('kpi-errores',    data.errores.informados);
 
-  let totalEnvios = data.envios.colecta + data.envios.flex + data.envios.turbo + data.envios.andreani;
+  let totalEnvios = data.envios.tiendanube + data.envios.full + data.envios.manuales + data.envios.colecta + data.envios.flex + data.envios.turbo + data.envios.andreani;
 
   myChartEnvios.data.datasets[0].data = [...historialEnvios];
   myChartEnvios.data.datasets[0].data[5] = totalEnvios;
@@ -701,14 +742,34 @@ setInterval(() => {
 
 async function initDashboard() {
   initCharts();
+  
+  const dateInput = document.getElementById('dashboard-date');
+  if (dateInput) {
+    dateInput.value = new Date().toISOString().slice(0, 10);
+    dateInput.addEventListener('change', async (e) => {
+      showToast('Cargando jornada...', 'info');
+      const targetDate = e.target.value;
+      const res = await ApiClient.getDashboard(targetDate);
+      if (res.success) updateDashboardUI(res.data);
+    });
+  }
+
   const res = await ApiClient.getDashboard();
   if (res.success) updateDashboardUI(res.data);
   
-  // Polling cada 30 segundos
+  // Polling del dashboard cada 30 segundos
   setInterval(async () => {
-    const r = await ApiClient.getDashboard();
+    const activeDate = document.getElementById('dashboard-date')?.value;
+    const r = await ApiClient.getDashboard(activeDate);
     if(r.success) updateDashboardUI(r.data);
   }, 30000);
+
+  // Auto-Sincronización con Google Drive cada 1 minuto (60000 ms)
+  setInterval(async () => {
+    if (currentProfile?.permiso_carga_trabajo) {
+      await syncDrive(true);
+    }
+  }, 60000);
 }
 
 // INICIAR TODO

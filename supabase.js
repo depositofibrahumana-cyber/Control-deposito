@@ -115,20 +115,20 @@ async function updateProfilePermissions(userId, patch) {
 // ─────────────────────────────────────────────
 // DASHBOARD & JORNADAS
 // ─────────────────────────────────────────────
-async function getOrCreateJornada() {
-  const today = new Date().toISOString().slice(0, 10);
-  const rows = await sbFetch(`jornadas?fecha=eq.${today}&limit=1`, { method: 'GET' });
+async function getOrCreateJornada(targetDate = null) {
+  const dateToFetch = targetDate || new Date().toISOString().slice(0, 10);
+  const rows = await sbFetch(`jornadas?fecha=eq.${dateToFetch}&limit=1`, { method: 'GET' });
   if (rows.length > 0) return rows[0];
 
   const created = await sbFetch('jornadas', {
     method: 'POST',
-    body: JSON.stringify({ fecha: today })
+    body: JSON.stringify({ fecha: dateToFetch })
   });
   return Array.isArray(created) ? created[0] : created;
 }
 
-async function getDashboardData() {
-  const jornada = await getOrCreateJornada();
+async function getDashboardData(targetDate = null) {
+  const jornada = await getOrCreateJornada(targetDate);
   const detalles = await sbFetch(`movimientos_detalle?jornada_id=eq.${jornada.id}&order=creado_en.asc`, { method: 'GET' });
   const histEnvios  = await sbFetch(`historial_envios?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' });
   const histErrores = await sbFetch(`historial_errores?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' });
