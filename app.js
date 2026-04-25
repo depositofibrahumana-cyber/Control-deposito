@@ -145,16 +145,22 @@ async function syncDrive(isAuto = false) {
     return;
   }
   
-  if (!isAuto) showToast('Sincronizando PDFs con Google Drive...', 'info');
-  const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
   const syncBtn = document.querySelector('button[onclick="syncDrive()"]');
-  if (syncBtn) {
-    syncBtn.disabled = true;
-    syncBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sincronizando...';
+  if (!isAuto) {
+    showToast('Sincronizando con Google Drive...', 'info');
+    if (syncBtn) {
+      syncBtn.disabled = true;
+      syncBtn.classList.add('syncing');
+      syncBtn.innerHTML = '⚡ Sincronizando...';
+    }
   }
+
+  const token = currentSession ? currentSession.access_token : SUPABASE_ANON;
   const activeDate = document.getElementById('dashboard-date')?.value;
-  const bodyData = !isAuto && activeDate ? JSON.stringify({ date: activeDate }) : JSON.stringify({});
+  const bodyData = JSON.stringify(activeDate ? { date: activeDate } : {});
   
+  const startTime = Date.now();
+
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/procesar-etiquetas-drive`, {
       method: 'POST',
@@ -168,17 +174,25 @@ async function syncDrive(isAuto = false) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Error en Edge Function');
     
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+    console.log(`Sync completed in ${duration}s`);
+
     if (!isAuto || data.nuevasHojas > 0) {
-      showToast(data.message, 'success');
+      showToast(`${data.message} (${duration}s)`, 'success');
     }
     
-    // Si se sumaron hojas, refrescamos el dashboard
     if (data.nuevasHojas > 0) {
-      await ApiClient.getDashboard();
+      await ApiClient.getDashboard(activeDate);
     }
   } catch (err) {
     console.error('Error Drive Sync:', err);
     if (!isAuto) showToast('⚠️ Error: ' + err.message, 'error');
+  } finally {
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.classList.remove('syncing');
+      syncBtn.innerHTML = '☁️ Sincronizar Drive';
+    }
   }
 }
 
@@ -776,19 +790,33 @@ async function initDashboard() {
     if (res.success) updateDashboardUI(res.data);
   }
   
-  // Polling del dashboard cada 30 segundos
-  setInterval(async () => {
-    const activeDate = document.getElementById('dashboard-date')?.value;
-    const r = await ApiClient.getDashboard(activeDate);
-    if(r.success) updateDashboardUI(r.data);
-  }, 30000);
+  // Polling del dashboard: cada 15 segundos si la ventana está activa, 60 si está en segundo plano
+  let pollingInterval = setInterval(refreshDashboard, 15000);
+  
+  async function refreshDashboard() {
+    if (document.visibilityState === 'visible') {
+      const activeDate = document.getElementById('dashboard-date')?.value;
+      const r = await ApiClient.getDashboard(activeDate);
+      if(r.success) updateDashboardUI(r.data);
+    }
+  }
 
-  // Auto-Sincronización con Google Drive cada 1 minuto (60000 ms)
+  window.addEventListener('visibilitychange', () => {
+    clearInterval(pollingInterval);
+    if (document.visibilityState === 'visible') {
+      refreshDashboard();
+      pollingInterval = setInterval(refreshDashboard, 15000);
+    } else {
+      pollingInterval = setInterval(refreshDashboard, 60000);
+    }
+  });
+
+  // Auto-Sincronización con Google Drive
   setInterval(async () => {
-    if (currentProfile?.permiso_carga_trabajo) {
+    if (currentProfile?.permiso_carga_trabajo && document.visibilityState === 'visible') {
       await syncDrive(true);
     }
-  }, 60000);
+  }, 45000); // Cada 45 segundos si está activo
 }
 
 // INICIAR TODO

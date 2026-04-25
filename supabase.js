@@ -136,9 +136,14 @@ async function getOrCreateJornada(targetDate = null) {
 
 async function getDashboardData(targetDate = null) {
   const jornada = await getOrCreateJornada(targetDate);
-  const detalles = await sbFetch(`movimientos_detalle?jornada_id=eq.${jornada.id}&order=creado_en.asc`, { method: 'GET' });
-  const histEnvios  = await sbFetch(`historial_envios?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' });
-  const histErrores = await sbFetch(`historial_errores?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' });
+  
+  // Ejecutamos las consultas en paralelo para mejorar la velocidad
+  const [detalles, histEnvios, histErrores] = await Promise.all([
+    sbFetch(`movimientos_detalle?jornada_id=eq.${jornada.id}&order=creado_en.asc`, { method: 'GET' }),
+    sbFetch(`historial_envios?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' }),
+    sbFetch(`historial_errores?jornada_id=eq.${jornada.id}&order=registrado_en.asc`, { method: 'GET' })
+  ]);
+
   return { jornada, detalles, histEnvios, histErrores };
 }
 
