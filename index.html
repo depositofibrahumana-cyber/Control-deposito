@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Depósito - Antigravity</title>
+  <title>Control de Depósito — Fibra Fitness</title>
+  <meta name="description" content="Panel de control logístico para gestión de depósito, envíos y stock de Fibra Fitness.">
 
-  <!-- Estilos y Fuentes -->
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Fira+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Estilos (fonts se cargan via @import en style.css) -->
   <link rel="stylesheet" href="style.css">
 
   <!-- Librerías Externas via CDN -->
@@ -21,29 +21,29 @@
   <!-- Navegación Lateral -->
   <aside class="sidebar" role="navigation" aria-label="Menú principal">
     <div class="logo">
-      <img src="logo.png" alt="Logo de Fibra Fitness - Control de Depósito" style="max-width: 100%; height: auto; padding: 1rem;">
-      <p>ECOMMERCE - LOGISTICA</p>
+      <img src="logo.png" alt="Logo de Fibra Fitness — Control de Depósito">
+      <p>ECOMMERCE · LOGÍSTICA</p>
     </div>
     <div class="menu" id="sidebar-menu">
-      <button class="nav-btn active auth-required" data-perm="any" onclick="switchView('view-dashboard', this, 'Panel de Control Industrial')" aria-label="Ir al Dashboard">📊 Dashboard</button>
-      <button class="nav-btn auth-required" data-perm="stock" onclick="switchView('view-stock', this, 'Control de Stock Avanzado')" aria-label="Ir a Gestión de Stock">📦 Stock</button>
-      <button class="nav-btn auth-required" data-perm="any" onclick="switchView('view-movimientos', this, 'Control de Movimientos Internos')" aria-label="Ir a Movimientos">📑 Movimientos</button>
+      <button class="nav-btn active auth-required" data-perm="any" onclick="switchView('view-dashboard', this, 'Panel de Control')" aria-label="Ir al Dashboard">📊 Dashboard</button>
+      <button class="nav-btn auth-required" data-perm="stock" onclick="switchView('view-stock', this, 'Control de Stock')" aria-label="Ir a Gestión de Stock">📦 Stock</button>
+      <button class="nav-btn auth-required" data-perm="any" onclick="switchView('view-movimientos', this, 'Movimientos Internos')" aria-label="Ir a Movimientos">📑 Movimientos</button>
       
-      <hr class="auth-required" style="border: 0; border-top: 1px solid var(--card-border); margin: 0.5rem 0;" />
+      <hr class="auth-required" />
       
       <button class="nav-btn auth-required" data-perm="carga_trabajo" onclick="openModal('uploadModal')" aria-label="Subir nueva jornada">📤 Cargar Jornada</button>
-      <button class="nav-btn auth-required" data-perm="carga_trabajo" onclick="syncDrive()" style="color: #60a5fa;" aria-label="Sincronizar con Google Drive">☁️ Sincronizar Drive</button>
+      <button class="nav-btn auth-required" data-perm="carga_trabajo" onclick="syncDrive()" aria-label="Sincronizar con Google Drive">☁️ Sincronizar Drive</button>
       <button class="nav-btn auth-required" data-perm="carga_manual" onclick="openModal('movModal')" aria-label="Registro manual de movimientos">➕ Registro Manual</button>
-      <button class="nav-btn auth-required" data-perm="any" onclick="downloadReport()" style="color: #10b981;" aria-label="Descargar reporte Excel">📥 Reporte</button>
+      <button class="nav-btn auth-required" data-perm="any" onclick="downloadReport()" aria-label="Descargar reporte Excel">📥 Reporte</button>
       
       <div id="admin-tools" class="hidden">
-        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 0.5rem 0;" />
-        <button class="nav-btn" onclick="switchView('view-admin', this, 'Administración de Usuarios')" aria-label="Ir al panel de Administración">⚙️ Admin</button>
-        <button class="nav-btn" onclick="resetCounters()" style="color: #ef4444;" aria-label="Reiniciar todas las métricas">🔄 Reiniciar Métricas</button>
+        <hr />
+        <button class="nav-btn" onclick="switchView('view-admin', this, 'Administración')" aria-label="Ir al panel de Administración">⚙️ Admin</button>
+        <button class="nav-btn" onclick="resetCounters()" style="color: var(--danger);" aria-label="Reiniciar todas las métricas">🔄 Reiniciar</button>
       </div>
 
-      <div style="margin-top: auto; padding-top: 1rem;">
-        <button class="nav-btn auth-required" onclick="handleLogout()" style="color: #94a3b8; font-size: 0.8rem;" aria-label="Cerrar Sesión">🔓 Cerrar Sesión</button>
+      <div style="margin-top: auto; padding-top: var(--space-4);">
+        <button class="nav-btn auth-required" onclick="handleLogout()" style="color: var(--neutral); font-size: 13px;" aria-label="Cerrar Sesión">🔓 Cerrar Sesión</button>
       </div>
     </div>
     <div class="status-indicator">
@@ -56,31 +56,31 @@
   <main class="main-content">
 
     <header>
-      <h2 id="view-title">Panel de Control Industrial</h2>
+      <h2 id="view-title">Panel de Control</h2>
       <div id="reloj" class="reloj">12:00:00</div>
     </header>
 
     <div id="view-dashboard" class="view active">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 style="margin: 0; color: var(--text-muted);">Estado de Envíos</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
+        <h3 style="margin: 0; color: var(--text-secondary); font-size: 16px; font-weight: 600;">Estado de Envíos</h3>
         <div class="form-group" style="margin-bottom: 0;">
           <label for="dashboard-date" class="sr-only">Fecha del Dashboard</label>
-          <input type="date" id="dashboard-date" class="input-modern" style="padding: 0.5rem; border-radius: 8px; width: auto;" title="Consultar historial por fecha" aria-label="Seleccionar fecha para el dashboard">
+          <input type="date" id="dashboard-date" title="Consultar historial por fecha" aria-label="Seleccionar fecha para el dashboard">
         </div>
       </div>
       
       <!-- Estado de Envíos Procesados -->
       <section class="nivel-urgencia" id="nivel-a">
-        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
           <div class="kpi-card info">
             <h4>TiendaNube</h4>
             <div class="kpi-value" id="kpi-tiendanube">...</div>
           </div>
-          <div class="kpi-card success" style="border-left-color: #f59e0b;">
+          <div class="kpi-card success">
             <h4>Full</h4>
             <div class="kpi-value" id="kpi-full">...</div>
           </div>
-          <div class="kpi-card alert" style="border-left-color: #8b5cf6;">
+          <div class="kpi-card alert">
             <h4>Manuales</h4>
             <div class="kpi-value" id="kpi-manuales">...</div>
           </div>
@@ -96,7 +96,7 @@
             <h4>Flex</h4>
             <div class="kpi-value" id="kpi-flex">...</div>
           </div>
-          <div class="kpi-card info" style="border-left-color: #64748b;">
+          <div class="kpi-card info">
             <h4>Colecta</h4>
             <div class="kpi-value" id="kpi-colecta">...</div>
           </div>
@@ -121,7 +121,7 @@
               <div class="kpi-value warning-text" id="kpi-errores">...</div>
               <p class="kpi-desc">Extraído de hojas de error</p>
             </div>
-            <div class="chart-container" style="height: 150px; margin-top: 1rem;">
+            <div class="chart-container" style="height: 150px; margin-top: var(--space-4);">
               <canvas id="errorChart"></canvas>
             </div>
           </div>
@@ -132,29 +132,24 @@
     <!-- Vista de Movimientos Internos -->
     <div id="view-movimientos" class="view hidden">
       <section class="nivel-urgencia">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
           <h3 style="margin: 0;">Control de Interdepósitos</h3>
-          <button class="nav-btn" onclick="resetMovimientosCounters()"
-            style="color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.1); padding: 0.5rem 1rem; width: auto; font-size: 0.85rem;">🔄
-            Reiniciar Movimientos</button>
+          <button class="btn-danger" onclick="resetMovimientosCounters()">🔄 Reiniciar Movimientos</button>
         </div>
         <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-          <div class="kpi-card" style="border-left-color: #06b6d4;">
-            <h4 style="color: #06b6d4;">Total Interdepósito</h4>
-            <div class="kpi-value" id="kpi-interdeposito"
-              style="color: #06b6d4; text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);">0</div>
+          <div class="kpi-card info">
+            <h4>Total Interdepósito</h4>
+            <div class="kpi-value" id="kpi-interdeposito">0</div>
             <p class="kpi-desc">Mercadería transferida</p>
           </div>
-          <div class="kpi-card" style="border-left-color: #d946ef;">
-            <h4 style="color: #d946ef;">Total Retiros</h4>
-            <div class="kpi-value" id="kpi-retiros"
-              style="color: #d946ef; text-shadow: 0 0 20px rgba(217, 70, 239, 0.3);">0</div>
+          <div class="kpi-card danger">
+            <h4>Total Retiros</h4>
+            <div class="kpi-value" id="kpi-retiros">0</div>
             <p class="kpi-desc">Mercadería extraída</p>
           </div>
-          <div class="kpi-card" style="border-left-color: #3b82f6;">
-            <h4 style="color: #3b82f6;">Total General</h4>
-            <div class="kpi-value" id="kpi-total-mov"
-              style="color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);">0</div>
+          <div class="kpi-card success">
+            <h4>Total General</h4>
+            <div class="kpi-value" id="kpi-total-mov">0</div>
             <p class="kpi-desc">Volumen sumado</p>
           </div>
         </div>
@@ -174,22 +169,21 @@
         <section class="nivel-urgencia" style="display: flex; flex-direction: column;">
           <h3>Detalle de Operaciones</h3>
           <div class="kpi-card"
-            style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; border-left-color: #8b5cf6;">
-            <h4 style="color: #8b5cf6;">Items Únicos Movidos</h4>
-            <div class="kpi-value" id="kpi-items-diff"
-              style="font-size: 4rem; color: #8b5cf6; text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);">0</div>
+            style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <h4>Items Únicos Movidos</h4>
+            <div class="kpi-value" id="kpi-items-diff" style="font-size: 48px;">0</div>
             <p class="kpi-desc" style="text-align: center;">Diferentes SKUs registrados en la jornada</p>
           </div>
         </section>
       </div>
 
       <!-- Detalle y Búsqueda de Códigos -->
-      <section class="nivel-urgencia" style="margin-top: 2rem;">
-        <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-          <h3>Detalle de Códigos Movilizados</h3>
+      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
+          <h3 style="margin: 0;">Detalle de Códigos Movilizados</h3>
+          <label for="search-movimientos" class="sr-only">Buscar código o depósito</label>
           <input type="text" id="search-movimientos" placeholder="Buscar código o depósito..." class="search-input"
-            onkeyup="renderMovimientosTable()">
+            onkeyup="renderMovimientosTable()" aria-label="Buscar código o depósito">
         </div>
         <div class="table-container">
           <table class="data-table" id="tabla-movimientos">
@@ -204,7 +198,7 @@
             <tbody>
               <!-- Se completa con JS -->
               <tr>
-                <td colspan="4" style="text-align: center; color: var(--text-secondary);">No hay datos registrados</td>
+                <td colspan="4" style="text-align: center; color: var(--neutral);">No hay datos registrados</td>
               </tr>
             </tbody>
           </table>
@@ -216,23 +210,23 @@
     <!-- Vista de Stock Avanzado -->
     <div id="view-stock" class="view hidden">
       <section class="nivel-urgencia">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-          <h3>Control de Stock por SKU</h3>
-          <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
+          <h3 style="margin: 0;">Control de Stock por SKU</h3>
+          <div style="display: flex; gap: var(--space-2);">
             <label for="stock-search-input" class="sr-only">Buscar por SKU</label>
             <input type="text" id="stock-search-input" placeholder="Ingresar SKU..." class="search-input" aria-label="SKU para buscar stock">
-            <button class="btn-primary" onclick="searchStock()" style="width: auto; padding: 0 1.5rem;" aria-label="Ejecutar búsqueda de stock">Buscar</button>
+            <button class="btn-primary" onclick="searchStock()" style="width: auto;" aria-label="Ejecutar búsqueda de stock">Buscar</button>
           </div>
         </div>
 
         <div id="stock-result-container" class="hidden">
-          <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 2rem;">
-            <div class="kpi-card" style="border-left-color: #10b981;">
+          <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--space-6);">
+            <div class="kpi-card success">
               <h4>Gaona 3735</h4>
               <div class="kpi-value" id="stock-gaona">0</div>
               <p class="kpi-desc">Stock disponible</p>
             </div>
-            <div class="kpi-card" style="border-left-color: #3b82f6;">
+            <div class="kpi-card info">
               <h4>Concordia 926</h4>
               <div class="kpi-value" id="stock-concordia">0</div>
               <p class="kpi-desc">Stock disponible</p>
@@ -258,21 +252,21 @@
           </div>
         </div>
         
-        <div id="stock-empty-state" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-          <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🔍</span>
+        <div id="stock-empty-state" style="text-align: center; padding: var(--space-16) var(--space-6); color: var(--neutral);">
+          <span style="font-size: 32px; display: block; margin-bottom: var(--space-4);">🔍</span>
           Busca un código para ver su stock y movimientos históricos
         </div>
       </section>
 
-      <section class="nivel-urgencia" style="margin-top: 2rem;">
+      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
         <h3>Registrar Nuevo Movimiento de Stock</h3>
-        <form id="stock-move-form" class="form-modern" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
+        <form id="stock-move-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
           <div class="form-group">
-            <label>SKU</label>
+            <label for="sm-sku">SKU</label>
             <input type="text" id="sm-sku" required>
           </div>
           <div class="form-group">
-            <label>Tipo</label>
+            <label for="sm-tipo">Tipo</label>
             <select id="sm-tipo" required onchange="toggleStockFormFields()">
               <option value="Ingreso">Ingreso (Carga Inicial/Compra)</option>
               <option value="Interdeposito">Interdepósito</option>
@@ -280,7 +274,7 @@
             </select>
           </div>
           <div class="form-group" id="group-origen">
-            <label>Origen</label>
+            <label for="sm-origen">Origen</label>
             <select id="sm-origen">
               <option value="">N/A</option>
               <option value="Gaona 3735">Gaona 3735</option>
@@ -288,7 +282,7 @@
             </select>
           </div>
           <div class="form-group" id="group-destino">
-            <label>Destino</label>
+            <label for="sm-destino">Destino</label>
             <select id="sm-destino">
               <option value="">N/A</option>
               <option value="Gaona 3735">Gaona 3735</option>
@@ -296,10 +290,10 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Cantidad</label>
+            <label for="sm-cantidad">Cantidad</label>
             <input type="number" id="sm-cantidad" required min="1">
           </div>
-          <button type="submit" class="btn-primary" style="height: 45px;">Registrar</button>
+          <button type="submit" class="btn-primary" style="height: 44px;">Registrar</button>
         </form>
       </section>
     </div>
@@ -308,7 +302,7 @@
     <div id="view-admin" class="view hidden">
       <section class="nivel-urgencia">
         <h3>Gestión de Usuarios y Permisos</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Administra quién puede acceder a cada módulo del sistema.</p>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-5); font-size: var(--text-small);">Administra quién puede acceder a cada módulo del sistema.</p>
         
         <div class="table-container">
           <table class="data-table">
@@ -341,14 +335,14 @@
         </div>
         <form id="login-form">
           <div class="form-group">
-            <label>Email</label>
+            <label for="login-email">Email</label>
             <input type="email" id="login-email" required placeholder="tu@email.com">
           </div>
           <div class="form-group">
-            <label>Contraseña</label>
+            <label for="login-password">Contraseña</label>
             <input type="password" id="login-password" required placeholder="••••••••">
           </div>
-          <button type="submit" class="btn-primary" style="margin-top: 1rem;">Iniciar Sesión</button>
+          <button type="submit" class="btn-primary">Iniciar Sesión</button>
         </form>
       </div>
     </div>
@@ -378,13 +372,14 @@
   </div>
 
   <!-- Modal para Movimientos Manuales -->
-  <div id="movModal" class="modal">
+  <div id="movModal" class="modal" role="dialog" aria-labelledby="movTitle" aria-modal="true">
     <div class="modal-content">
-      <span class="close" onclick="closeModal('movModal')">&times;</span>
-      <h2>Registrar Movimiento</h2>
+      <span class="close" onclick="closeModal('movModal')" role="button" aria-label="Cerrar modal">&times;</span>
+      <h2 id="movTitle">Registrar Movimiento</h2>
+      <p>Registra un movimiento manual en tiempo real.</p>
       <form id="movForm" class="form-modern">
         <div class="form-group">
-          <label>Tipo de Tarea</label>
+          <label for="movTipo">Tipo de Tarea</label>
           <select id="movTipo" required>
             <option value="colecta">Colecta</option>
             <option value="flex">Flex</option>
@@ -394,10 +389,10 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Cantidad de Paquetes</label>
+          <label for="movCant">Cantidad de Paquetes</label>
           <input type="number" id="movCant" required min="1">
         </div>
-        <button type="submit" class="btn-primary">Registrar en Tiempo Real</button>
+        <button type="submit" class="btn-primary">Registrar</button>
       </form>
     </div>
   </div>

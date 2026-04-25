@@ -264,8 +264,8 @@ async function handleLogout() {
 /* ==================================
   UI CORE & CHARTJS
 ===================================== */
-Chart.defaults.color = '#94a3b8';
-Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#9C9C9C';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
 
 let myChartEnvios, myChartErrores, myChartMovimientos;
 
@@ -278,8 +278,8 @@ function initCharts() {
           datasets: [{
               label: 'Volumen Total',
               data: historialEnvios,
-              borderColor: '#4F46E5',
-              backgroundColor: 'rgba(79, 70, 229, 0.2)',
+              borderColor: '#6366F1',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
               borderWidth: 3,
               fill: true,
               tension: 0.4
@@ -296,7 +296,7 @@ function initCharts() {
           datasets: [{
               label: 'Errores Informados',
               data: historialErrores,
-              backgroundColor: '#EF4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.8)',
               borderRadius: 6
           }]
       },
@@ -310,7 +310,7 @@ function initCharts() {
           labels: ['Interdepósito', 'Retiros'],
           datasets: [{
               data: [0, 0],
-              backgroundColor: ['#06b6d4', '#d946ef'],
+              backgroundColor: ['#6366F1', '#EF4444'],
               borderWidth: 0
           }]
       },
