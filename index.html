@@ -32,7 +32,6 @@
       <hr class="auth-required" />
       
       <button class="nav-btn auth-required" data-perm="carga_trabajo" onclick="openModal('uploadModal')" aria-label="Subir nueva jornada">📤 Cargar Jornada</button>
-      <button class="nav-btn auth-required" data-perm="carga_trabajo" onclick="syncDrive()" aria-label="Sincronizar con Google Drive">☁️ Sincronizar Drive</button>
       <button class="nav-btn auth-required" data-perm="carga_manual" onclick="openModal('movModal')" aria-label="Registro manual de movimientos">➕ Registro Manual</button>
       <button class="nav-btn auth-required" data-perm="any" onclick="downloadReport()" aria-label="Descargar reporte Excel">📥 Reporte</button>
       
@@ -63,9 +62,12 @@
     <div id="view-dashboard" class="view active">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
         <h3 style="margin: 0; color: var(--text-secondary); font-size: 16px; font-weight: 600;">Estado de Envíos</h3>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label for="dashboard-date" class="sr-only">Fecha del Dashboard</label>
-          <input type="date" id="dashboard-date" title="Consultar historial por fecha" aria-label="Seleccionar fecha para el dashboard">
+        <div style="display: flex; align-items: center; gap: var(--space-3);">
+          <button class="btn-secondary auth-required" data-perm="carga_trabajo" onclick="syncDrive()" aria-label="Sincronizar con Google Drive">☁️ Sincronizar Drive</button>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="dashboard-date" class="sr-only">Fecha del Dashboard</label>
+            <input type="date" id="dashboard-date" title="Consultar historial por fecha" aria-label="Seleccionar fecha para el dashboard">
+          </div>
         </div>
       </div>
       
