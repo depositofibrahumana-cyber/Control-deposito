@@ -226,4 +226,6 @@ async function getStockSummaryBySku(sku) {
   
   return stock;
 }
-
+async function getRecentStockMovements(limit = 20) {
+  return await sbFetch(`stock_movimientos?order=fecha.desc&limit=${limit}`, { method: 'GET' });
+}

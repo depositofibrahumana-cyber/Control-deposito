@@ -502,6 +502,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('active')
 
 function switchView(viewId, btnElement, titleText) {
   if (viewId === 'view-admin') loadAdminUsers();
+  if (viewId === 'view-stock') renderRecentMovements();
   
   document.querySelectorAll('.view').forEach(v => {
     v.classList.remove('active');
@@ -754,11 +755,52 @@ function initEventListeners() {
         showToast('Movimiento registrado correctamente');
         e.target.reset();
         toggleStockFormFields();
-        searchStock();
+        renderRecentMovements(); // Actualizar actividad reciente
+        
+        // Si hay una búsqueda activa de SKU, refrescarla
+        const currentSearch = document.getElementById('stock-search-input').value;
+        if (currentSearch) searchStock();
       } catch (err) {
         showToast(err.message, 'error');
       }
     };
+  }
+}
+
+async function renderRecentMovements() {
+  const table = document.getElementById('recent-movements-table');
+  if (!table) return;
+
+  try {
+    const movs = await getRecentStockMovements(20);
+    if (movs.length === 0) {
+      table.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">No hay actividad reciente registrada</td></tr>';
+      return;
+    }
+
+    table.innerHTML = movs.map(m => {
+      const fecha = new Date(m.fecha).toLocaleString('es-ES', { 
+        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+      });
+      const depos = m.tipo === 'Ingreso' ? `→ ${m.deposito_destino}` :
+                   m.tipo === 'Retiro' ? `${m.deposito_origen} →` :
+                   `${m.deposito_origen} → ${m.deposito_destino}`;
+      
+      let typeClass = m.tipo === 'Ingreso' ? 'badge interdeposito' : 
+                      m.tipo === 'Retiro' ? 'badge retiro' : 'badge interdeposito';
+
+      return `
+        <tr>
+          <td>${fecha}</td>
+          <td><strong style="color: var(--primary); cursor: pointer;" onclick="document.getElementById('stock-search-input').value='${m.sku}'; searchStock();">${m.sku}</strong></td>
+          <td><span class="${typeClass}">${m.tipo}</span></td>
+          <td>${m.cantidad}</td>
+          <td style="font-size: 12px; color: var(--text-secondary);">${depos}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    table.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Error al cargar actividad: ${err.message}</td></tr>`;
   }
 }
 

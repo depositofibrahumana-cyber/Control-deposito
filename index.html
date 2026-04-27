@@ -27,7 +27,6 @@
     <div class="menu" id="sidebar-menu">
       <button class="nav-btn active auth-required" data-perm="any" onclick="switchView('view-dashboard', this, 'Panel de Control')" aria-label="Ir al Dashboard">📊 Dashboard</button>
       <button class="nav-btn auth-required" data-perm="stock" onclick="switchView('view-stock', this, 'Control de Stock')" aria-label="Ir a Gestión de Stock">📦 Stock</button>
-      <button class="nav-btn auth-required" data-perm="any" onclick="switchView('view-movimientos', this, 'Movimientos Internos')" aria-label="Ir a Movimientos">📑 Movimientos</button>
       
       <hr class="auth-required" />
       
@@ -131,85 +130,7 @@
       </div>
     </div> <!-- Cierre de view-dashboard -->
 
-    <!-- Vista de Movimientos Internos -->
-    <div id="view-movimientos" class="view hidden">
-      <section class="nivel-urgencia">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
-          <h3 style="margin: 0;">Control de Interdepósitos</h3>
-          <button class="btn-danger" onclick="resetMovimientosCounters()">🔄 Reiniciar Movimientos</button>
-        </div>
-        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-          <div class="kpi-card info">
-            <h4>Total Interdepósito</h4>
-            <div class="kpi-value" id="kpi-interdeposito">0</div>
-            <p class="kpi-desc">Mercadería transferida</p>
-          </div>
-          <div class="kpi-card danger">
-            <h4>Total Retiros</h4>
-            <div class="kpi-value" id="kpi-retiros">0</div>
-            <p class="kpi-desc">Mercadería extraída</p>
-          </div>
-          <div class="kpi-card success">
-            <h4>Total General</h4>
-            <div class="kpi-value" id="kpi-total-mov">0</div>
-            <p class="kpi-desc">Volumen sumado</p>
-          </div>
-        </div>
-      </section>
 
-      <div class="split-layout">
-        <!-- Gráfico de Dona -->
-        <section class="nivel-urgencia" style="display: flex; flex-direction: column;">
-          <h3>Distribución de Movimientos</h3>
-          <div class="chart-container"
-            style="flex-grow: 1; min-height: 250px; display: flex; align-items: center; justify-content: center;">
-            <canvas id="movimientosChart" style="max-height: 250px;"></canvas>
-          </div>
-        </section>
-
-        <!-- Detalle Adicional -->
-        <section class="nivel-urgencia" style="display: flex; flex-direction: column;">
-          <h3>Detalle de Operaciones</h3>
-          <div class="kpi-card"
-            style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <h4>Items Únicos Movidos</h4>
-            <div class="kpi-value" id="kpi-items-diff" style="font-size: 48px;">0</div>
-            <p class="kpi-desc" style="text-align: center;">Diferentes SKUs registrados en la jornada</p>
-          </div>
-        </section>
-      </div>
-
-      <!-- Detalle y Búsqueda de Códigos -->
-      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
-          <h3 style="margin: 0;">Detalle de Códigos Movilizados</h3>
-          <label for="search-movimientos" class="sr-only">Buscar código o depósito</label>
-          <input type="text" id="search-movimientos" placeholder="Buscar código o depósito..." class="search-input"
-            onkeyup="renderMovimientosTable()" aria-label="Buscar código o depósito">
-        </div>
-        <div class="table-container">
-          <table class="data-table" id="tabla-movimientos">
-            <thead>
-              <tr>
-                <th>Código (SKU)</th>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Depósito</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Se completa con JS -->
-              <tr>
-                <td colspan="4" style="text-align: center; color: var(--neutral);">No hay datos registrados</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Vista de Stock Avanzado -->
     <div id="view-stock" class="view hidden">
       <section class="nivel-urgencia">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
@@ -254,9 +175,32 @@
           </div>
         </div>
         
-        <div id="stock-empty-state" style="text-align: center; padding: var(--space-16) var(--space-6); color: var(--neutral);">
+        <div id="stock-empty-state" style="text-align: center; padding: var(--space-10) var(--space-6); color: var(--neutral);">
           <span style="font-size: 32px; display: block; margin-bottom: var(--space-4);">🔍</span>
           Busca un código para ver su stock y movimientos históricos
+        </div>
+      </section>
+
+      <!-- Nueva sección: Últimos 20 movimientos -->
+      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
+        <h3>Última Actividad de Stock</h3>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha/Hora</th>
+                <th>SKU</th>
+                <th>Tipo</th>
+                <th>Cant.</th>
+                <th>Depósitos (Origen → Destino)</th>
+              </tr>
+            </thead>
+            <tbody id="recent-movements-table">
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">Cargando actividad reciente...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
