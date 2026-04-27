@@ -303,19 +303,7 @@ function initCharts() {
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
   });
 
-  let ctxMovimientos = document.getElementById('movimientosChart').getContext('2d');
-  myChartMovimientos = new Chart(ctxMovimientos, {
-      type: 'doughnut',
-      data: {
-          labels: ['Interdepósito', 'Retiros'],
-          datasets: [{
-              data: [0, 0],
-              backgroundColor: ['#6366F1', '#EF4444'],
-              borderWidth: 0
-          }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
-  });
+  // Gráfico de movimientos removido
 }
 
 function updateDashboardUI(data) {
@@ -347,32 +335,7 @@ function updateDashboardUI(data) {
   myChartErrores.data.datasets[0].data[5] = data.errores.informados;
   myChartErrores.update();
 
-  if(data.movimientos) {
-    anim('kpi-interdeposito', data.movimientos.interdeposito);
-    anim('kpi-retiros',       data.movimientos.retiros);
-    anim('kpi-total-mov',     data.movimientos.interdeposito + data.movimientos.retiros);
-    anim('kpi-items-diff',    data.movimientos.itemsDiferentes);
-
-    myChartMovimientos.data.datasets[0].data = [data.movimientos.interdeposito, data.movimientos.retiros];
-    myChartMovimientos.update();
-    renderMovimientosTable();
-  }
-}
-
-function renderMovimientosTable() {
-  const query = (document.getElementById('search-movimientos')?.value || '').toLowerCase();
-  const tbody = document.querySelector('#tabla-movimientos tbody');
-  if (!tbody || !appData.movimientos) return;
-
-  const detalles = appData.movimientos.detalles || [];
-  let html = '';
-  detalles.forEach(d => {
-    const searchStr = `${d.item} ${d.tipo} ${d.deposito}`.toLowerCase();
-    if (query && !searchStr.includes(query)) return;
-    const badgeClass = d.tipo.toLowerCase().includes('interdeposito') ? 'interdeposito' : 'retiro';
-    html += `<tr><td style="font-weight: 600;">${d.item}</td><td><span class="badge ${badgeClass}">${d.tipo}</span></td><td>${d.cantidad}</td><td>${d.deposito}</td></tr>`;
-  });
-  tbody.innerHTML = html || '<tr><td colspan="4" style="text-align: center;">No hay resultados</td></tr>';
+  // Movimientos removidos
 }
 
 /* ==================================
