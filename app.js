@@ -432,11 +432,63 @@ async function loadAdminUsers() {
         <td><label class="switch"><input type="checkbox" ${u.permiso_carga_manual ? 'checked' : ''} onchange="togglePerm('${u.id}', 'permiso_carga_manual', this.checked)"><span class="slider"></span></label></td>
         <td><label class="switch"><input type="checkbox" ${u.permiso_reinicio_metricas ? 'checked' : ''} onchange="togglePerm('${u.id}', 'permiso_reinicio_metricas', this.checked)"><span class="slider"></span></label></td>
         <td><label class="switch"><input type="checkbox" ${u.permiso_stock ? 'checked' : ''} onchange="togglePerm('${u.id}', 'permiso_stock', this.checked)"><span class="slider"></span></label></td>
-        <td><button class="btn-small danger" onclick="showToast('Función de borrado no implementada por seguridad')">Eliminar</button></td>
+        <td>
+          <div style="display: flex; gap: var(--space-2);">
+            <button class="btn-small info" onclick="openUserModal('${u.id}')" title="Editar Usuario">✏️</button>
+            <button class="btn-small danger" onclick="deleteUser('${u.id}', '${u.email}')" title="Eliminar Usuario">🗑️</button>
+          </div>
+        </td>
       </tr>
     `;
   });
   tbody.innerHTML = html;
+}
+
+let allUserProfiles = []; // Cache para edición rápida
+
+async function openUserModal(userId = null) {
+  const modal = document.getElementById('userModal');
+  const form = document.getElementById('userForm');
+  const title = document.getElementById('userTitle');
+  const sub = document.getElementById('userSub');
+  
+  form.reset();
+  document.getElementById('user-id').value = userId || '';
+  
+  if (userId) {
+    title.innerText = 'Editar Usuario';
+    sub.innerText = 'Actualiza los datos y permisos del usuario.';
+    const profiles = await getAllProfiles(); // Refrescar o usar cache
+    const u = profiles.find(p => p.id === userId);
+    if (u) {
+      document.getElementById('user-email').value = u.email;
+      document.getElementById('user-is-admin').checked = u.is_admin;
+      document.getElementById('user-perm-stock').checked = u.permiso_stock;
+      document.getElementById('user-perm-carga').checked = u.permiso_carga_trabajo;
+      document.getElementById('user-perm-manual').checked = u.permiso_carga_manual;
+      document.getElementById('user-perm-reinicio').checked = u.permiso_reinicio_metricas;
+    }
+  } else {
+    title.innerText = 'Nuevo Usuario';
+    sub.innerText = 'Crea un nuevo acceso para el sistema.';
+  }
+  
+  openModal('userModal');
+}
+
+async function deleteUser(userId, email) {
+  if (userId === currentUser.id) return showToast('No puedes eliminarte a ti mismo', 'error');
+  
+  if (confirm(`¿Estás seguro de que deseas eliminar permanentemente al usuario ${email}?`)) {
+    try {
+      showToast('Eliminando usuario...', 'info');
+      await manageUser('delete', { id: userId });
+      showToast('Usuario eliminado correctamente');
+      loadAdminUsers();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
 }
 
 async function togglePerm(userId, field, value) {
@@ -725,6 +777,38 @@ function initEventListeners() {
         if (currentSearch) searchStock();
       } catch (err) {
         showToast(err.message, 'error');
+      }
+    };
+  }
+
+  const userForm = document.getElementById('userForm');
+  if (userForm) {
+    userForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('user-id').value;
+      const email = document.getElementById('user-email').value;
+      const password = document.getElementById('user-password').value;
+      
+      const userData = {
+        id: id || undefined,
+        email,
+        password: password || undefined,
+        is_admin: document.getElementById('user-is-admin').checked,
+        permiso_stock: document.getElementById('user-perm-stock').checked,
+        permiso_carga_trabajo: document.getElementById('user-perm-carga').checked,
+        permiso_carga_manual: document.getElementById('user-perm-manual').checked,
+        permiso_reinicio_metricas: document.getElementById('user-perm-reinicio').checked
+      };
+
+      try {
+        const action = id ? 'update' : 'create';
+        showToast(id ? 'Actualizando...' : 'Creando...', 'info');
+        await manageUser(action, userData);
+        showToast(`Usuario ${id ? 'actualizado' : 'creado'} correctamente`);
+        closeModal('userModal');
+        loadAdminUsers();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
       }
     };
   }

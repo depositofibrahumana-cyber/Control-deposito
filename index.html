@@ -247,8 +247,13 @@
     <!-- Vista de Administración -->
     <div id="view-admin" class="view hidden">
       <section class="nivel-urgencia">
-        <h3>Gestión de Usuarios y Permisos</h3>
-        <p style="color: var(--text-secondary); margin-bottom: var(--space-5); font-size: var(--text-small);">Administra quién puede acceder a cada módulo del sistema.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
+          <div>
+            <h3>Gestión de Usuarios y Permisos</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 0; font-size: var(--text-small);">Administra quién puede acceder a cada módulo del sistema.</p>
+          </div>
+          <button class="btn-primary" onclick="openUserModal()" aria-label="Crear nuevo usuario">👤 Nuevo Usuario</button>
+        </div>
         
         <div class="table-container">
           <table class="data-table">
@@ -314,6 +319,52 @@
         <div class="loader"></div>
         <span id="uploadStatusText">Procesando archivo...</span>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal para Usuarios (Crear/Editar) -->
+  <div id="userModal" class="modal" role="dialog" aria-labelledby="userTitle" aria-modal="true">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('userModal')" role="button" aria-label="Cerrar modal">&times;</span>
+      <h2 id="userTitle">Usuario</h2>
+      <p id="userSub">Completa los datos del usuario.</p>
+      <form id="userForm" class="form-modern">
+        <input type="hidden" id="user-id">
+        <div class="form-group">
+          <label for="user-email">Email</label>
+          <input type="email" id="user-email" required placeholder="email@ejemplo.com">
+        </div>
+        <div class="form-group" id="pass-group">
+          <label for="user-password">Contraseña</label>
+          <input type="password" id="user-password" placeholder="Mínimo 6 caracteres">
+          <small style="color: var(--neutral); font-size: 11px;">Dejar vacío para mantener contraseña actual (en edición).</small>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-2);">
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <label for="user-is-admin">Administrador</label>
+            <label class="switch"><input type="checkbox" id="user-is-admin"><span class="slider"></span></label>
+          </div>
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <label for="user-perm-stock">Acceso Stock</label>
+            <label class="switch"><input type="checkbox" id="user-perm-stock" checked><span class="slider"></span></label>
+          </div>
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <label for="user-perm-carga">Carga Jornada</label>
+            <label class="switch"><input type="checkbox" id="user-perm-carga" checked><span class="slider"></span></label>
+          </div>
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <label for="user-perm-manual">Carga Manual</label>
+            <label class="switch"><input type="checkbox" id="user-perm-manual" checked><span class="slider"></span></label>
+          </div>
+          <div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between;">
+            <label for="user-perm-reinicio">Reinicio Métricas</label>
+            <label class="switch"><input type="checkbox" id="user-perm-reinicio"><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: var(--space-4);">Guardar Usuario</button>
+      </form>
     </div>
   </div>
 

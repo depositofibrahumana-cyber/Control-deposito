@@ -112,6 +112,26 @@ async function updateProfilePermissions(userId, patch) {
   });
 }
 
+async function manageUser(action, userData) {
+  // action: 'create', 'update', 'delete'
+  // userData: { id, email, password, is_admin, ... }
+  const session = await getSession();
+  const token = session ? session.access_token : SUPABASE_ANON;
+  
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-users`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ action, ...userData })
+  });
+  
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error gestionando usuario');
+  return data;
+}
+
 // ─────────────────────────────────────────────
 // DASHBOARD & JORNADAS
 // ─────────────────────────────────────────────

@@ -986,6 +986,16 @@ input::placeholder {
   border-color: var(--danger);
 }
 
+.btn-small.info {
+  color: var(--primary);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.btn-small.info:hover {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: var(--primary);
+}
+
 /* ─────────────────────────────────────────────
    CHART CONTAINER ADJUSTMENTS
    ───────────────────────────────────────────── */
