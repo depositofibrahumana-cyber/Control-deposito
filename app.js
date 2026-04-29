@@ -5,7 +5,7 @@
 
 // Estado en memoria
 let appData = {
-  envios:      { tiendanube: 0, full: 0, manuales: 0, colecta: 0, flex: 0, turbo: 0, andreani: 0 },
+  envios:      { tiendanube: 0, manuales: 0, colecta: 0, flex: 0, turbo: 0, andreani: 0 },
   errores:     { informados: 0 },
   movimientos: { interdeposito: 0, retiros: 0, itemsDiferentes: 0, detalles: [] }
 };
@@ -29,7 +29,6 @@ async function syncFromSupabase(targetDate = null) {
     jornadaActual = jornada;
 
     appData.envios.tiendanube   = jornada.tiendanube || 0;
-    appData.envios.full         = jornada.full_envios || 0;
     appData.envios.manuales     = jornada.manuales || 0;
     appData.envios.colecta      = jornada.colecta || 0;
     appData.envios.flex         = jornada.flex || 0;
@@ -317,7 +316,6 @@ function updateDashboardUI(data) {
   };
 
   anim('kpi-tiendanube', data.envios.tiendanube);
-  anim('kpi-full',       data.envios.full);
   anim('kpi-manuales',   data.envios.manuales);
   anim('kpi-colecta',    data.envios.colecta);
   anim('kpi-flex',       data.envios.flex);
@@ -325,7 +323,7 @@ function updateDashboardUI(data) {
   anim('kpi-andreani',   data.envios.andreani);
   anim('kpi-errores',    data.errores.informados);
 
-  let totalEnvios = data.envios.tiendanube + data.envios.full + data.envios.manuales + data.envios.colecta + data.envios.flex + data.envios.turbo + data.envios.andreani;
+  let totalEnvios = data.envios.tiendanube + data.envios.manuales + data.envios.colecta + data.envios.flex + data.envios.turbo + data.envios.andreani;
 
   myChartEnvios.data.datasets[0].data = [...historialEnvios];
   myChartEnvios.data.datasets[0].data[5] = totalEnvios;
