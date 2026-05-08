@@ -46,8 +46,6 @@
         <hr />
         <button class="nav-btn" onclick="switchView('view-admin', this, 'Administración')"
           aria-label="Ir al panel de Administración">⚙️ Admin</button>
-        <button class="nav-btn" onclick="resetCounters()" style="color: var(--danger);"
-          aria-label="Reiniciar Dashboard">🔄 Reiniciar Dash</button>
         <button class="nav-btn" onclick="resetStock()" style="color: var(--danger);"
           aria-label="Reiniciar todo el Stock">📦 Reiniciar Stock</button>
       </div>
@@ -147,11 +145,13 @@
       <section class="nivel-urgencia">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
           <h3 style="margin: 0;">Registrar Nuevo Movimiento de Stock</h3>
-          <button class="btn-secondary" onclick="openModal('stockSearchModal')" aria-label="Abrir buscador de stock">🔍 Buscar SKU</button>
+          <button class="btn-secondary" onclick="openModal('stockSearchModal')" aria-label="Abrir buscador de stock">🔍
+            Buscar SKU</button>
         </div>
-        
+
         <form id="stock-move-form" class="form-modern">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
             <div class="form-group">
               <label for="sm-sku">SKU del Producto</label>
               <input type="text" id="sm-sku" required placeholder="Ej: F-100-NE">
@@ -188,7 +188,8 @@
 
           <!-- Variaciones -->
           <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
               <label style="font-weight: 600; font-size: 14px;">Variaciones del Producto (Opcional)</label>
               <button type="button" class="btn-small info" onclick="addVariationRow()">+ Agregar Variación</button>
             </div>
@@ -222,7 +223,8 @@
             </thead>
             <tbody id="recent-movements-table">
               <tr>
-                <td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">Cargando actividad reciente...</td>
+                <td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">Cargando actividad
+                  reciente...</td>
               </tr>
             </tbody>
           </table>
@@ -233,20 +235,22 @@
     <!-- Modal: Control de Stock por SKU (Buscador Flotante) -->
     <div id="stockSearchModal" class="modal" role="dialog" aria-labelledby="stockSearchTitle" aria-modal="true">
       <div class="modal-content" style="max-width: 800px;">
-        <span class="close" onclick="closeModal('stockSearchModal')" role="button" aria-label="Cerrar modal">&times;</span>
+        <span class="close" onclick="closeModal('stockSearchModal')" role="button"
+          aria-label="Cerrar modal">&times;</span>
         <h2 id="stockSearchTitle">Control de Stock por SKU</h2>
         <p>Busca un código para ver su stock y movimientos históricos.</p>
 
         <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-6);">
           <label for="stock-search-input" class="sr-only">Buscar por SKU</label>
-          <input type="text" id="stock-search-input" placeholder="Ingresar SKU..." class="search-input" style="flex-grow: 1;"
-            aria-label="SKU para buscar stock">
+          <input type="text" id="stock-search-input" placeholder="Ingresar SKU..." class="search-input"
+            style="flex-grow: 1;" aria-label="SKU para buscar stock">
           <button class="btn-primary" onclick="searchStock()" style="width: auto;"
             aria-label="Ejecutar búsqueda de stock">Buscar</button>
         </div>
 
         <div id="stock-result-container" class="hidden">
-          <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: var(--space-6);">
+          <div class="kpi-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: var(--space-6);">
             <div class="kpi-card success">
               <h4>Gaona 3735</h4>
               <div class="kpi-value" id="stock-gaona">0</div>
@@ -278,7 +282,8 @@
           </div>
         </div>
 
-        <div id="stock-empty-state" style="text-align: center; padding: var(--space-10) var(--space-6); color: var(--neutral);">
+        <div id="stock-empty-state"
+          style="text-align: center; padding: var(--space-10) var(--space-6); color: var(--neutral);">
           <span style="font-size: 32px; display: block; margin-bottom: var(--space-4);">🔍</span>
           Ingresa un SKU para ver los detalles.
         </div>
