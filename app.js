@@ -340,7 +340,8 @@ function updateDashboardUI(data) {
   STOCK MANAGEMENT LOGIC
 ===================================== */
 async function searchStock() {
-  const sku = document.getElementById('stock-search-input').value.trim();
+  const skuInput = document.getElementById('stock-search-input');
+  const sku = skuInput.value.trim();
   if (!sku) return;
 
   const emptyState = document.getElementById('stock-empty-state');
@@ -355,13 +356,22 @@ async function searchStock() {
     
     let html = '';
     moves.forEach(m => {
-      const date = new Date(m.fecha).toLocaleString('es-ES');
+      const date = new Date(m.fecha).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      const depos = m.tipo === 'Ingreso' ? `→ ${m.deposito_destino}` :
+                   m.tipo === 'Retiro' ? `${m.deposito_origen} →` :
+                   `${m.deposito_origen} → ${m.deposito_destino}`;
+      
+      let variationsText = '-';
+      if (m.variaciones && Array.isArray(m.variaciones) && m.variaciones.length > 0) {
+        variationsText = m.variaciones.map(v => `<span class="badge info" style="font-size: 10px; margin-right: 4px;">${v.nombre}: ${v.valor}</span>`).join('');
+      }
+
       html += `<tr>
         <td>${date}</td>
-        <td>${m.tipo}</td>
-        <td>${m.cantidad}</td>
-        <td>${m.deposito_origen || '-'}</td>
-        <td>${m.deposito_destino || '-'}</td>
+        <td><span class="badge ${m.tipo === 'Ingreso' ? 'interdeposito' : m.tipo === 'Retiro' ? 'retiro' : 'interdeposito'}">${m.tipo}</span></td>
+        <td style="font-weight: 700;">${m.cantidad}</td>
+        <td style="font-size: 11px; color: var(--text-secondary);">${depos}</td>
+        <td>${variationsText}</td>
       </tr>`;
     });
     
@@ -372,6 +382,20 @@ async function searchStock() {
   } catch (err) {
     showToast('Error buscando stock: ' + err.message, 'error');
   }
+}
+
+// Lógica de Variaciones
+function addVariationRow() {
+  const container = document.getElementById('variations-container');
+  const row = document.createElement('div');
+  row.className = 'variation-row';
+  row.style = 'display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-2); align-items: center;';
+  row.innerHTML = `
+    <input type="text" placeholder="Nombre (ej: Color)" class="var-name" required>
+    <input type="text" placeholder="Valor (ej: Rojo)" class="var-value" required>
+    <button type="button" class="btn-small danger" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.appendChild(row);
 }
 
 function toggleStockFormFields() {
@@ -393,22 +417,42 @@ function toggleStockFormFields() {
 
 document.getElementById('stock-move-form').onsubmit = async (e) => {
   e.preventDefault();
+  
+  // Recolectar variaciones
+  const varRows = document.querySelectorAll('.variation-row');
+  const variaciones = Array.from(varRows).map(row => ({
+    nombre: row.querySelector('.var-name').value.trim(),
+    valor: row.querySelector('.var-value').value.trim()
+  })).filter(v => v.nombre && v.valor);
+
   const mov = {
-    sku: document.getElementById('sm-sku').value,
+    sku: document.getElementById('sm-sku').value.trim(),
     tipo: document.getElementById('sm-tipo').value,
     cantidad: document.getElementById('sm-cantidad').value,
     deposito_origen: document.getElementById('sm-origen').value,
-    deposito_destino: document.getElementById('sm-destino').value
+    deposito_destino: document.getElementById('sm-destino').value,
+    variaciones: variaciones
   };
   
   try {
+    showToast('Registrando movimiento...', 'info');
     await insertStockMovimiento(mov);
-    showToast('Movimiento registrado correctamente');
+    showToast('✅ Movimiento registrado correctamente');
+    
+    // Limpiar formulario
     e.target.reset();
+    document.getElementById('variations-container').innerHTML = '';
     toggleStockFormFields();
-    searchStock(); // Refrescar si estábamos viendo ese SKU
+    
+    // Actualizar actividad reciente
+    renderRecentMovements();
+    
+    // Si el modal de búsqueda está abierto, refrescar resultados
+    if (document.getElementById('stockSearchModal').classList.contains('active')) {
+      searchStock();
+    }
   } catch (err) {
-    showToast(err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   }
 };
 
@@ -515,7 +559,14 @@ function closeModal(id) { document.getElementById(id).classList.remove('active')
 
 function switchView(viewId, btnElement, titleText) {
   if (viewId === 'view-admin') loadAdminUsers();
-  if (viewId === 'view-stock') renderRecentMovements();
+  if (viewId === 'view-stock') {
+    renderRecentMovements();
+    // Limpiar buscador de stock al entrar
+    document.getElementById('stock-search-input').value = '';
+    document.getElementById('stock-result-container').classList.add('hidden');
+    document.getElementById('stock-empty-state').classList.remove('hidden');
+    document.getElementById('variations-container').innerHTML = '';
+  }
   
   document.querySelectorAll('.view').forEach(v => {
     v.classList.remove('active');
@@ -752,32 +803,7 @@ function initEventListeners() {
     };
   }
 
-  const stockMoveForm = document.getElementById('stock-move-form');
-  if (stockMoveForm) {
-    stockMoveForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const mov = {
-        sku: document.getElementById('sm-sku').value,
-        tipo: document.getElementById('sm-tipo').value,
-        cantidad: document.getElementById('sm-cantidad').value,
-        deposito_origen: document.getElementById('sm-origen').value,
-        deposito_destino: document.getElementById('sm-destino').value
-      };
-      try {
-        await insertStockMovimiento(mov);
-        showToast('Movimiento registrado correctamente');
-        e.target.reset();
-        toggleStockFormFields();
-        renderRecentMovements(); // Actualizar actividad reciente
-        
-        // Si hay una búsqueda activa de SKU, refrescarla
-        const currentSearch = document.getElementById('stock-search-input').value;
-        if (currentSearch) searchStock();
-      } catch (err) {
-        showToast(err.message, 'error');
-      }
-    };
-  }
+  // Stock form se maneja arriba con document.getElementById('stock-move-form').onsubmit
 
   const userForm = document.getElementById('userForm');
   if (userForm) {
@@ -834,12 +860,25 @@ async function renderRecentMovements() {
       let typeClass = m.tipo === 'Ingreso' ? 'badge interdeposito' : 
                       m.tipo === 'Retiro' ? 'badge retiro' : 'badge interdeposito';
 
+      let varHtml = '';
+      if (m.variaciones && Array.isArray(m.variaciones) && m.variaciones.length > 0) {
+        varHtml = `<div style="font-size: 10px; color: var(--neutral); margin-top: 4px;">
+          ${m.variaciones.map(v => `${v.nombre}: ${v.valor}`).join(' | ')}
+        </div>`;
+      }
+
       return `
         <tr>
           <td>${fecha}</td>
-          <td><strong style="color: var(--primary); cursor: pointer;" onclick="document.getElementById('stock-search-input').value='${m.sku}'; searchStock();">${m.sku}</strong></td>
+          <td>
+            <strong style="color: var(--primary); cursor: pointer;" 
+                    onclick="document.getElementById('stock-search-input').value='${m.sku}'; openModal('stockSearchModal'); searchStock();">
+              ${m.sku}
+            </strong>
+            ${varHtml}
+          </td>
           <td><span class="${typeClass}">${m.tipo}</span></td>
-          <td>${m.cantidad}</td>
+          <td style="font-weight: 600;">${m.cantidad}</td>
           <td style="font-size: 12px; color: var(--text-secondary);">${depos}</td>
         </tr>
       `;

@@ -141,63 +141,72 @@
 
 
     <div id="view-stock" class="view hidden">
+      <!-- 1. Registrar Nuevo Movimiento de Stock -->
       <section class="nivel-urgencia">
-        <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3);">
-          <h3 style="margin: 0;">Control de Stock por SKU</h3>
-          <div style="display: flex; gap: var(--space-2);">
-            <label for="stock-search-input" class="sr-only">Buscar por SKU</label>
-            <input type="text" id="stock-search-input" placeholder="Ingresar SKU..." class="search-input"
-              aria-label="SKU para buscar stock">
-            <button class="btn-primary" onclick="searchStock()" style="width: auto;"
-              aria-label="Ejecutar búsqueda de stock">Buscar</button>
-          </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
+          <h3 style="margin: 0;">Registrar Nuevo Movimiento de Stock</h3>
+          <button class="btn-secondary" onclick="openModal('stockSearchModal')" aria-label="Abrir buscador de stock">🔍 Buscar SKU</button>
         </div>
-
-        <div id="stock-result-container" class="hidden">
-          <div class="kpi-grid"
-            style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--space-6);">
-            <div class="kpi-card success">
-              <h4>Gaona 3735</h4>
-              <div class="kpi-value" id="stock-gaona">0</div>
-              <p class="kpi-desc">Stock disponible</p>
+        
+        <form id="stock-move-form" class="form-modern">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
+            <div class="form-group">
+              <label for="sm-sku">SKU del Producto</label>
+              <input type="text" id="sm-sku" required placeholder="Ej: F-100-NE">
             </div>
-            <div class="kpi-card info">
-              <h4>Concordia 926</h4>
-              <div class="kpi-value" id="stock-concordia">0</div>
-              <p class="kpi-desc">Stock disponible</p>
+            <div class="form-group">
+              <label for="sm-tipo">Tipo de Movimiento</label>
+              <select id="sm-tipo" required onchange="toggleStockFormFields()">
+                <option value="Ingreso">Ingreso (Carga Inicial/Compra)</option>
+                <option value="Interdeposito" selected>Interdepósito</option>
+                <option value="Retiro">Retiro / Venta</option>
+              </select>
+            </div>
+            <div class="form-group" id="group-origen">
+              <label for="sm-origen">Depósito Origen</label>
+              <select id="sm-origen">
+                <option value="">N/A</option>
+                <option value="Gaona 3735">Gaona 3735</option>
+                <option value="Concordia 926">Concordia 926</option>
+              </select>
+            </div>
+            <div class="form-group" id="group-destino">
+              <label for="sm-destino">Depósito Destino</label>
+              <select id="sm-destino">
+                <option value="">N/A</option>
+                <option value="Gaona 3735">Gaona 3735</option>
+                <option value="Concordia 926">Concordia 926</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sm-cantidad">Cantidad Total</label>
+              <input type="number" id="sm-cantidad" required min="1" placeholder="0">
             </div>
           </div>
 
-          <h3>Historial de Movimientos del Item</h3>
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Tipo</th>
-                  <th>Cant.</th>
-                  <th>Origen</th>
-                  <th>Destino</th>
-                </tr>
-              </thead>
-              <tbody id="stock-movements-table">
-                <!-- Se completa con JS -->
-              </tbody>
-            </table>
+          <!-- Variaciones -->
+          <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+              <label style="font-weight: 600; font-size: 14px;">Variaciones del Producto (Opcional)</label>
+              <button type="button" class="btn-small info" onclick="addVariationRow()">+ Agregar Variación</button>
+            </div>
+            <div id="variations-container" style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <!-- Se completará dinámicamente -->
+            </div>
           </div>
-        </div>
 
-        <div id="stock-empty-state"
-          style="text-align: center; padding: var(--space-10) var(--space-6); color: var(--neutral);">
-          <span style="font-size: 32px; display: block; margin-bottom: var(--space-4);">🔍</span>
-          Busca un código para ver su stock y movimientos históricos
-        </div>
+          <div style="margin-top: var(--space-6); display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn-primary" style="width: 200px; height: 44px;">Registrar Movimiento</button>
+          </div>
+        </form>
       </section>
 
-      <!-- Nueva sección: Últimos 20 movimientos -->
-      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
-        <h3>Última Actividad de Stock</h3>
+      <!-- 2. Última Actividad de Stock -->
+      <section class="nivel-urgencia">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <h3 style="margin: 0;">Última Actividad de Stock</h3>
+          <button class="btn-secondary" onclick="renderRecentMovements()" title="Refrescar lista">🔄</button>
+        </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
@@ -211,53 +220,67 @@
             </thead>
             <tbody id="recent-movements-table">
               <tr>
-                <td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">Cargando actividad
-                  reciente...</td>
+                <td colspan="5" style="text-align: center; padding: 20px; color: var(--neutral);">Cargando actividad reciente...</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+    </div>
 
-      <section class="nivel-urgencia" style="margin-top: var(--space-6);">
-        <h3>Registrar Nuevo Movimiento de Stock</h3>
-        <form id="stock-move-form"
-          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
-          <div class="form-group">
-            <label for="sm-sku">SKU</label>
-            <input type="text" id="sm-sku" required>
+    <!-- Modal: Control de Stock por SKU (Buscador Flotante) -->
+    <div id="stockSearchModal" class="modal" role="dialog" aria-labelledby="stockSearchTitle" aria-modal="true">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closeModal('stockSearchModal')" role="button" aria-label="Cerrar modal">&times;</span>
+        <h2 id="stockSearchTitle">Control de Stock por SKU</h2>
+        <p>Busca un código para ver su stock y movimientos históricos.</p>
+
+        <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-6);">
+          <label for="stock-search-input" class="sr-only">Buscar por SKU</label>
+          <input type="text" id="stock-search-input" placeholder="Ingresar SKU..." class="search-input" style="flex-grow: 1;"
+            aria-label="SKU para buscar stock">
+          <button class="btn-primary" onclick="searchStock()" style="width: auto;"
+            aria-label="Ejecutar búsqueda de stock">Buscar</button>
+        </div>
+
+        <div id="stock-result-container" class="hidden">
+          <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: var(--space-6);">
+            <div class="kpi-card success">
+              <h4>Gaona 3735</h4>
+              <div class="kpi-value" id="stock-gaona">0</div>
+              <p class="kpi-desc">Stock disponible</p>
+            </div>
+            <div class="kpi-card info">
+              <h4>Concordia 926</h4>
+              <div class="kpi-value" id="stock-concordia">0</div>
+              <p class="kpi-desc">Stock disponible</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="sm-tipo">Tipo</label>
-            <select id="sm-tipo" required onchange="toggleStockFormFields()">
-              <option value="Ingreso">Ingreso (Carga Inicial/Compra)</option>
-              <option value="Interdeposito">Interdepósito</option>
-              <option value="Retiro">Retiro / Venta</option>
-            </select>
+
+          <h3 style="font-size: 14px; margin-bottom: var(--space-3);">Historial de Movimientos</h3>
+          <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+            <table class="data-table">
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Cant.</th>
+                  <th>Origen/Destino</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody id="stock-movements-table">
+                <!-- Se completa con JS -->
+              </tbody>
+            </table>
           </div>
-          <div class="form-group" id="group-origen">
-            <label for="sm-origen">Origen</label>
-            <select id="sm-origen">
-              <option value="">N/A</option>
-              <option value="Gaona 3735">Gaona 3735</option>
-              <option value="Concordia 926">Concordia 926</option>
-            </select>
-          </div>
-          <div class="form-group" id="group-destino">
-            <label for="sm-destino">Destino</label>
-            <select id="sm-destino">
-              <option value="">N/A</option>
-              <option value="Gaona 3735">Gaona 3735</option>
-              <option value="Concordia 926">Concordia 926</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="sm-cantidad">Cantidad</label>
-            <input type="number" id="sm-cantidad" required min="1">
-          </div>
-          <button type="submit" class="btn-primary" style="height: 44px;">Registrar</button>
-        </form>
-      </section>
+        </div>
+
+        <div id="stock-empty-state" style="text-align: center; padding: var(--space-10) var(--space-6); color: var(--neutral);">
+          <span style="font-size: 32px; display: block; margin-bottom: var(--space-4);">🔍</span>
+          Ingresa un SKU para ver los detalles.
+        </div>
+      </div>
     </div>
 
     <!-- Vista de Administración -->

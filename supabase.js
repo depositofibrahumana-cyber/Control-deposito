@@ -211,7 +211,7 @@ async function resetMovimientos(jornadaId) {
 // ADVANCED STOCK MANAGEMENT
 // ─────────────────────────────────────────────
 async function insertStockMovimiento(mov) {
-  // mov: { sku, tipo, cantidad, deposito_origen, deposito_destino }
+  // mov: { sku, tipo, cantidad, deposito_origen, deposito_destino, variaciones }
   return await sbFetch('stock_movimientos', {
     method: 'POST',
     body: JSON.stringify({
@@ -220,6 +220,7 @@ async function insertStockMovimiento(mov) {
       cantidad: parseInt(mov.cantidad),
       deposito_origen: mov.deposito_origen,
       deposito_destino: mov.deposito_destino,
+      variaciones: mov.variaciones || [],
       creado_por: currentSession?.user?.id
     })
   });

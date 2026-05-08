@@ -1002,3 +1002,27 @@ input::placeholder {
 .chart-container canvas {
   border-radius: var(--radius-lg);
 }
+
+/* ─────────────────────────────────────────────
+   VARIATIONS STYLING
+   ───────────────────────────────────────────── */
+.variation-row {
+  background: var(--bg);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.variation-row input {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  height: 32px !important;
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
