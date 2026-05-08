@@ -588,7 +588,7 @@ function switchView(viewId, btnElement, titleText) {
 
 async function resetCounters() {
   if (!currentProfile?.is_admin && !currentProfile?.permiso_reinicio_metricas) return showToast('No tienes permiso', 'error');
-  if (confirm('¿Estás seguro de que deseas reiniciar TODOS los contadores?')) {
+  if (confirm('¿Estás seguro de que deseas reiniciar TODOS los contadores del Dashboard?')) {
     const res = await ApiClient.resetData();
     if(res.success) {
       showToast(res.message);
@@ -596,6 +596,25 @@ async function resetCounters() {
       updateDashboardUI(stateRes.data);
     } else {
       showToast(res.message, 'error');
+    }
+  }
+}
+
+async function resetStock() {
+  if (!currentProfile?.is_admin) return showToast('Solo un administrador puede reiniciar el stock', 'error');
+  if (confirm('⚠️ ATENCIÓN: ¿Estás seguro de que deseas borrar permanentemente TODO el historial de stock para comenzar de cero? Esta acción no se puede deshacer.')) {
+    try {
+      showToast('Borrando historial de stock...', 'info');
+      await truncateStockMovimientos();
+      showToast('📦 Stock reiniciado correctamente');
+      
+      // Refrescar la vista si estamos en stock
+      const stockView = document.getElementById('view-stock');
+      if (stockView && stockView.classList.contains('active')) {
+        renderRecentMovements();
+      }
+    } catch (err) {
+      showToast('Error al reiniciar stock: ' + err.message, 'error');
     }
   }
 }

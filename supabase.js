@@ -250,3 +250,10 @@ async function getStockSummaryBySku(sku) {
 async function getRecentStockMovements(limit = 20) {
   return await sbFetch(`stock_movimientos?order=fecha.desc&limit=${limit}`, { method: 'GET' });
 }
+
+async function truncateStockMovimientos() {
+  return await sbFetch('stock_movimientos', { 
+    method: 'DELETE', 
+    headers: { 'Prefer': '' } // Delete all without filter
+  });
+}
