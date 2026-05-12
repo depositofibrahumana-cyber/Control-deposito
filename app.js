@@ -384,15 +384,54 @@ async function searchStock() {
   }
 }
 
-// Lógica de Variaciones
-function addVariationRow() {
-  const container = document.getElementById('variations-container');
+// Lógica de Artículos y Movimientos Múltiples
+let articleCounter = 0;
+
+function addArticleRow() {
+  const container = document.getElementById('articles-container');
+  const articleId = `article-${Date.now()}-${articleCounter++}`;
+  
+  const row = document.createElement('div');
+  row.className = 'article-row';
+  row.id = articleId;
+  row.style = 'background: var(--bg); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--border); position: relative;';
+  
+  row.innerHTML = `
+    ${container.children.length > 0 ? `<button type="button" class="close" onclick="this.parentElement.remove()" style="top: 10px; right: 10px;">&times;</button>` : ''}
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+      <div class="form-group">
+        <label>SKU del Producto</label>
+        <input type="text" class="sm-sku" required placeholder="Ej: F-100-NE">
+      </div>
+      <div class="form-group">
+        <label>Cantidad Total</label>
+        <input type="number" class="sm-cantidad" required min="1" placeholder="0">
+      </div>
+    </div>
+
+    <!-- Variaciones para este artículo -->
+    <div style="margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px dashed var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+        <label style="font-weight: 600; font-size: 13px; color: var(--text-secondary);">Variaciones (Opcional)</label>
+        <button type="button" class="btn-small info" onclick="addVariationRow(this)">+ Agregar Variación</button>
+      </div>
+      <div class="variations-container" style="display: flex; flex-direction: column; gap: var(--space-2);">
+        <!-- Variaciones dinámicas -->
+      </div>
+    </div>
+  `;
+  container.appendChild(row);
+}
+
+// Lógica de Variaciones (Actualizada para soportar múltiples artículos)
+function addVariationRow(btn) {
+  const container = btn.parentElement.nextElementSibling;
   const row = document.createElement('div');
   row.className = 'variation-row';
   row.style = 'display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-2); align-items: center;';
   row.innerHTML = `
-    <input type="text" placeholder="Nombre (ej: Color)" class="var-name" required>
-    <input type="text" placeholder="Valor (ej: Rojo)" class="var-value" required>
+    <input type="text" placeholder="Nombre" class="var-name" required>
+    <input type="text" placeholder="Valor" class="var-value" required>
     <button type="button" class="btn-small danger" onclick="this.parentElement.remove()">✕</button>
   `;
   container.appendChild(row);
@@ -418,30 +457,50 @@ function toggleStockFormFields() {
 document.getElementById('stock-move-form').onsubmit = async (e) => {
   e.preventDefault();
   
-  // Recolectar variaciones
-  const varRows = document.querySelectorAll('.variation-row');
-  const variaciones = Array.from(varRows).map(row => ({
-    nombre: row.querySelector('.var-name').value.trim(),
-    valor: row.querySelector('.var-value').value.trim()
-  })).filter(v => v.nombre && v.valor);
+  const tipo = document.getElementById('sm-tipo').value;
+  const origen = document.getElementById('sm-origen').value;
+  const destino = document.getElementById('sm-destino').value;
+  
+  const articleRows = document.querySelectorAll('.article-row');
+  const movimientos = [];
 
-  const mov = {
-    sku: document.getElementById('sm-sku').value.trim(),
-    tipo: document.getElementById('sm-tipo').value,
-    cantidad: document.getElementById('sm-cantidad').value,
-    deposito_origen: document.getElementById('sm-origen').value,
-    deposito_destino: document.getElementById('sm-destino').value,
-    variaciones: variaciones
-  };
+  articleRows.forEach(row => {
+    const sku = row.querySelector('.sm-sku').value.trim();
+    const cantidad = row.querySelector('.sm-cantidad').value;
+    
+    const varRows = row.querySelectorAll('.variation-row');
+    const variaciones = Array.from(varRows).map(vr => ({
+      nombre: vr.querySelector('.var-name').value.trim(),
+      valor: vr.querySelector('.var-value').value.trim()
+    })).filter(v => v.nombre && v.valor);
+
+    if (sku && cantidad) {
+      movimientos.push({
+        sku,
+        tipo,
+        cantidad,
+        deposito_origen: origen,
+        deposito_destino: destino,
+        variaciones
+      });
+    }
+  });
+
+  if (movimientos.length === 0) return showToast('Agregue al menos un artículo', 'error');
   
   try {
-    showToast('Registrando movimiento...', 'info');
-    await insertStockMovimiento(mov);
-    showToast('✅ Movimiento registrado correctamente');
+    showToast(`Registrando ${movimientos.length} movimiento(s)...`, 'info');
+    
+    // Procesar todos los movimientos
+    for (const mov of movimientos) {
+      await insertStockMovimiento(mov);
+    }
+
+    showToast(`✅ ${movimientos.length} movimiento(s) registrado(s) correctamente`);
     
     // Limpiar formulario
-    e.target.reset();
-    document.getElementById('variations-container').innerHTML = '';
+    document.getElementById('articles-container').innerHTML = '';
+    addArticleRow(); // Reiniciar con una fila vacía
     toggleStockFormFields();
     
     // Actualizar actividad reciente
@@ -565,7 +624,9 @@ function switchView(viewId, btnElement, titleText) {
     document.getElementById('stock-search-input').value = '';
     document.getElementById('stock-result-container').classList.add('hidden');
     document.getElementById('stock-empty-state').classList.remove('hidden');
-    document.getElementById('variations-container').innerHTML = '';
+    document.getElementById('articles-container').innerHTML = '';
+    addArticleRow();
+    toggleStockFormFields();
   }
   
   document.querySelectorAll('.view').forEach(v => {

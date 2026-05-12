@@ -150,12 +150,8 @@
         </div>
 
         <form id="stock-move-form" class="form-modern">
-          <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end;">
-            <div class="form-group">
-              <label for="sm-sku">SKU del Producto</label>
-              <input type="text" id="sm-sku" required placeholder="Ej: F-100-NE">
-            </div>
+          <!-- Configuración Común (Se aplica a todos los artículos) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); align-items: end; padding-bottom: var(--space-4); border-bottom: 1px solid var(--border);">
             <div class="form-group">
               <label for="sm-tipo">Tipo de Movimiento</label>
               <select id="sm-tipo" required onchange="toggleStockFormFields()">
@@ -180,26 +176,20 @@
                 <option value="Concordia 926">Concordia 926</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="sm-cantidad">Cantidad Total</label>
-              <input type="number" id="sm-cantidad" required min="1" placeholder="0">
-            </div>
           </div>
 
-          <!-- Variaciones -->
-          <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border);">
-            <div
-              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
-              <label style="font-weight: 600; font-size: 14px;">Variaciones del Producto (Opcional)</label>
-              <button type="button" class="btn-small info" onclick="addVariationRow()">+ Agregar Variación</button>
-            </div>
-            <div id="variations-container" style="display: flex; flex-direction: column; gap: var(--space-2);">
-              <!-- Se completará dinámicamente -->
-            </div>
+          <!-- Contenedor de Artículos (Movimientos Individuales) -->
+          <div id="articles-container" style="display: flex; flex-direction: column; gap: var(--space-6); margin-top: var(--space-4);">
+            <!-- Se completará dinámicamente con JavaScript -->
           </div>
 
-          <div style="margin-top: var(--space-6); display: flex; justify-content: flex-end;">
-            <button type="submit" class="btn-primary" style="width: 200px; height: 44px;">Registrar Movimiento</button>
+          <!-- Botón para agregar otro artículo al lote -->
+          <div style="margin-top: var(--space-4); display: flex; gap: var(--space-3);">
+            <button type="button" class="btn-secondary" onclick="addArticleRow()" style="height: 38px;">+ Agregar Movimiento</button>
+          </div>
+
+          <div style="margin-top: var(--space-8); display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: var(--space-6);">
+            <button type="submit" class="btn-primary" style="width: 240px; height: 48px; font-size: 16px;">Registrar Todos los Movimientos</button>
           </div>
         </form>
       </section>
