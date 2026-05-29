@@ -1,0 +1,916 @@
+/* ============================================================
+   FIBRA FITNESS GENESIS — BOCETO CSS
+   Premium OLED Cyber-Gym Style · High Contrast Neon Orange/Cian
+   ============================================================ */
+
+/* ─────────────────────────────────────────────
+   VARIABLES & DESIGN SYSTEM
+   ───────────────────────────────────────────── */
+:root {
+  --bg-deep: #060709;
+  --bg-surface: #111319;
+  --bg-glass: rgba(17, 19, 25, 0.75);
+  
+  --primary: #FF5500;
+  --primary-hover: #FF7332;
+  --primary-glow: rgba(255, 85, 0, 0.35);
+  
+  --secondary: #00F0FF;
+  --secondary-glow: rgba(0, 240, 255, 0.3);
+  
+  --text-main: #FFFFFF;
+  --text-secondary: #8F909A;
+  --text-muted: #535565;
+  
+  --border: rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(255, 85, 0, 0.2);
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  --shadow-neon: 0 0 25px rgba(255, 85, 0, 0.25);
+  --shadow-cyan: 0 0 25px rgba(0, 240, 255, 0.25);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ─────────────────────────────────────────────
+   RESET & ESTILOS BASE
+   ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Títulos con Barlow Condensed */
+h1, h2, h3, h4, .section-tag, .product-price, .nav-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: #252833;
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ─────────────────────────────────────────────
+   BARRA DE NAVEGACIÓN
+   ───────────────────────────────────────────── */
+.nav-boceto {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  background: rgba(6, 7, 9, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.nav-logo {
+  font-size: 28px;
+  color: var(--text-main);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+
+.nav-logo .logo-accent {
+  color: var(--primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+.btn-back-dashboard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-back-dashboard:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-neon);
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────
+   GLASSMORPHISM PANELS
+   ───────────────────────────────────────────── */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition);
+}
+
+/* ─────────────────────────────────────────────
+   SECCIÓN 1: HERO SCROLL ANIMATION (MÁQUINA ENSAMBLÁNDOSE)
+   ───────────────────────────────────────────── */
+.scroll-hero-section {
+  position: relative;
+  /* Altura extra de scroll para gatillar el ensamblaje */
+  height: 220vh;
+  background-color: var(--bg-deep);
+}
+
+.sticky-container {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Rejilla Cyber de fondo de alta fidelidad */
+.cyber-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 85, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 85, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Textos Superpuestos */
+.hero-text-overlay {
+  position: absolute;
+  top: 140px;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.glitch-title {
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #FFFFFF 30%, #FF5500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Indicador de scroll */
+.scroll-indicator {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.scroll-indicator span {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.arrow-down-glow {
+  color: var(--primary);
+  animation: bounceIndicator 2s infinite ease-in-out;
+  filter: drop-shadow(0 0 6px var(--primary));
+}
+
+@keyframes bounceIndicator {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
+/* Visor de la Máquina */
+.machine-viewer {
+  position: absolute;
+  bottom: -20px;
+  width: 100%;
+  max-width: 900px;
+  height: 80vh;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+#gym-machine-svg {
+  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.6));
+}
+
+/* Clases para las Partes de la Máquina */
+.machine-part {
+  transition: transform 0.05s ease-out, opacity 0.05s ease-out;
+  will-change: transform, opacity;
+}
+
+/* ─────────────────────────────────────────────
+   SECCIONES COMUNES (Encabezados)
+   ───────────────────────────────────────────── */
+.section-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 50px auto;
+  padding: 0 20px;
+}
+
+.section-tag {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.section-desc {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ─────────────────────────────────────────────
+   SECCIÓN 2: CARROUSEL DE PRODUCTOS
+   ───────────────────────────────────────────── */
+.carousel-products-section {
+  background-color: var(--bg-deep);
+  padding: 100px 0;
+  position: relative;
+  border-top: 1px solid var(--border);
+}
+
+.carousel-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 40px;
+}
+
+.carousel-track-container {
+  flex-grow: 1;
+  overflow: hidden;
+  padding: 20px 0;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 24px;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.carousel-nav-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.carousel-nav-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-neon);
+  transform: scale(1.05);
+}
+
+/* Tarjetas de Producto */
+.product-card {
+  width: calc((100% - 48px) / 3); /* 3 visibles */
+  flex-shrink: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 420px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .product-card {
+    width: calc((100% - 24px) / 2); /* 2 visibles en tablets */
+  }
+}
+@media (max-width: 768px) {
+  .product-card {
+    width: 100%; /* 1 visible en móviles */
+  }
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.05) 0%, transparent 100%);
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 0;
+}
+
+.product-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 1px var(--primary);
+  transform: translateY(-6px);
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+.product-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  z-index: 5;
+}
+
+.product-image-placeholder {
+  height: 200px;
+  background: rgba(6, 7, 9, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.product-svg-icon {
+  width: 130px;
+  height: 130px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  transition: var(--transition);
+}
+
+.product-card:hover .product-svg-icon {
+  transform: scale(1.08) rotate(2deg);
+}
+
+.product-info {
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.product-category {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-main);
+  font-family: 'Barlow', sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-price {
+  font-size: 22px;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+.btn-buy-icon {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-buy-icon:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-main);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* ─────────────────────────────────────────────
+   SECCIÓN 3: SELECTOR DINÁMICO CUERPO / MÚSCULOS
+   ───────────────────────────────────────────── */
+.interactive-selector-section {
+  background-color: var(--bg-deep);
+  padding: 100px 0;
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+/* Toggle de Género */
+.gender-toggle-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.gender-toggle-wrapper {
+  display: flex;
+  background: #111319;
+  border: 1px solid var(--border);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  position: relative;
+  width: 320px;
+}
+
+.gender-toggle-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 12px 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 5;
+  transition: var(--transition);
+}
+
+.gender-toggle-btn.active {
+  color: var(--text-main);
+}
+
+/* Slider deslizador del botón */
+.gender-toggle-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-neon);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 1;
+}
+
+.gender-toggle-wrapper:has([data-gender="female"].active) .gender-toggle-slider {
+  transform: translateX(100%);
+  background: var(--secondary);
+  box-shadow: var(--shadow-cyan);
+}
+
+/* Layout Dividido */
+.selector-split-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 40px;
+  padding: 0 40px;
+}
+
+@media (max-width: 900px) {
+  .selector-split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Visualizador de Cuerpo Humano */
+.body-viewer-container {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-height: 600px;
+}
+
+.muscle-instructions {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.body-graphics-wrapper {
+  width: 100%;
+  max-width: 320px;
+  height: 480px;
+  position: relative;
+}
+
+/* Siluetas de Cuerpo */
+.body-silhouette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.body-silhouette.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+/* Músculos del Vector SVG */
+.muscle-path {
+  fill: #1C1D24;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.muscle-group:hover .muscle-path {
+  fill: var(--primary-glow);
+  stroke: var(--primary);
+  filter: drop-shadow(0 0 4px var(--primary));
+}
+
+/* Resaltado cuando se selecciona */
+.muscle-group.active .muscle-path {
+  fill: var(--primary) !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 1.5 !important;
+  filter: drop-shadow(0 0 8px var(--primary)) !important;
+}
+
+/* Adaptación del color de destaque según género (Cian para mujeres, Naranja para hombres) */
+#body-female-svg .muscle-group:hover .muscle-path {
+  fill: var(--secondary-glow);
+  stroke: var(--secondary);
+  filter: drop-shadow(0 0 4px var(--secondary));
+}
+
+#body-female-svg .muscle-group.active .muscle-path {
+  fill: var(--secondary) !important;
+  stroke: #FFFFFF !important;
+  stroke-width: 1.5 !important;
+  filter: drop-shadow(0 0 8px var(--secondary)) !important;
+}
+
+/* Contorno del cuerpo estático */
+.body-base-outline path {
+  transition: stroke 0.3s ease;
+}
+
+/* Botones flotantes (Músculo Chips) */
+.muscle-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.muscle-chip {
+  background: #191B24;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.muscle-chip:hover {
+  background: rgba(255, 85, 0, 0.1);
+  color: var(--text-main);
+  border-color: var(--primary);
+}
+
+.muscle-chip.active {
+  background: var(--primary);
+  color: var(--text-main);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-neon);
+}
+
+/* Variante mujer para chips */
+.gender-toggle-wrapper:has([data-gender="female"].active) ~ .selector-split-layout .muscle-chip:hover {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--secondary);
+}
+
+.gender-toggle-wrapper:has([data-gender="female"].active) ~ .selector-split-layout .muscle-chip.active {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  box-shadow: var(--shadow-cyan);
+}
+
+/* Columna Derecha: Contenedor Recomendaciones */
+.recommendations-container {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.recommendations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.rec-title {
+  font-size: 22px;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.rec-target-label {
+  background: rgba(255, 85, 0, 0.1);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+
+.gender-toggle-wrapper:has([data-gender="female"].active) ~ .selector-split-layout .rec-target-label {
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+/* Lista de Recomendaciones */
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+/* Fichas de producto recomendado */
+.rec-product-item {
+  display: flex;
+  gap: 20px;
+  background: rgba(6, 7, 9, 0.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  align-items: center;
+  animation: slideInRec 0.4s ease forwards;
+  opacity: 0;
+  transform: translateX(15px);
+  transition: var(--transition);
+}
+
+.rec-product-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideInRec {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.rec-product-img {
+  width: 70px;
+  height: 70px;
+  background: #161821;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rec-product-img svg {
+  width: 50px;
+  height: 50px;
+}
+
+.rec-product-details {
+  flex-grow: 1;
+}
+
+.rec-product-category {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.rec-product-name {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.rec-product-price {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.btn-rec-buy {
+  background: var(--primary);
+  border: none;
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-rec-buy:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.gender-toggle-wrapper:has([data-gender="female"].active) ~ .selector-split-layout .btn-rec-buy {
+  background: var(--secondary);
+}
+
+.gender-toggle-wrapper:has([data-gender="female"].active) ~ .selector-split-layout .btn-rec-buy:hover {
+  background: #33f3ff;
+  box-shadow: 0 0 10px var(--secondary-glow);
+}
+
+/* Estado Vacío de Recomendaciones */
+.recommendations-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  flex-grow: 1;
+}
+
+.empty-icon {
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.recommendations-empty.hidden {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────
+   PIE DE PÁGINA
+   ───────────────────────────────────────────── */
+.footer-boceto {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid var(--border);
+  background-color: #040507;
+  color: var(--text-muted);
+  font-size: 13px;
+}

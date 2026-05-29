@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boceto Interactivo — Fibra Fitness Genesis</title>
+  <meta name="description" content="Maqueta de alta fidelidad con scroll interactivo y selector muscular dinámico para Fibra Fitness.">
+  
+  <!-- Barlow & Barlow Condensed de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Estilos del Boceto -->
+  <link rel="stylesheet" href="boceto.css">
+</head>
+<body>
+
+  <!-- Barra de Navegación Premium -->
+  <nav class="nav-boceto">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-accent">FIBRA</span>FITNESS
+      </a>
+      <div class="nav-links">
+        <a href="#hero-section">Inicio</a>
+        <a href="#carousel-section">Productos</a>
+        <a href="#selector-section">Entrenamiento</a>
+      </div>
+      <a href="index.html" class="btn-back-dashboard">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Panel de Control
+      </a>
+    </div>
+  </nav>
+
+  <!-- SECCIÓN 1: HERO SCROLL ANIMATION (MÁQUINA ENSAMBLÁNDOSE) -->
+  <section id="hero-section" class="scroll-hero-section">
+    <!-- Contenedor Sticky donde ocurre la animación -->
+    <div class="sticky-container">
+      
+      <!-- Grid de Fondo Estilo Cyberpunk / Fitness Grid -->
+      <div class="cyber-grid"></div>
+      
+      <!-- Textos Superpuestos del Hero -->
+      <div class="hero-text-overlay">
+        <h1 class="glitch-title" data-text="FIBRA GENESIS">FIBRA GENESIS</h1>
+        <p class="hero-subtitle">DESLIZA PARA ENSAMBLAR TU CAMINO DE FUERZA</p>
+        <div class="scroll-indicator">
+          <span>HACER SCROLL</span>
+          <div class="arrow-down-glow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenedor del SVG de la Máquina de Gimnasio -->
+      <div class="machine-viewer">
+        <svg id="gym-machine-svg" viewBox="0 0 800 700" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+          <!-- Definición de filtros de brillo y neón -->
+          <defs>
+            <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="8" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="cyan-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <!-- Patrón de rejilla industrial para las placas -->
+            <pattern id="weight-pattern" width="100" height="20" patternUnits="userSpaceOnUse">
+              <rect width="96" height="16" x="2" y="2" rx="3" fill="#1C1D24" stroke="#FF5500" stroke-width="1"/>
+            </pattern>
+          </defs>
+
+          <!-- 1. PARTE: ESTRUCTURA PRINCIPAL (FRAME) - Entra desde arriba -->
+          <g id="part-frame" class="machine-part">
+            <!-- Base de la máquina -->
+            <path d="M 150,600 L 650,600 L 630,570 L 170,570 Z" fill="#20222B" stroke="#3A3E4E" stroke-width="3" />
+            <!-- Columnas verticales gemelas (guías) -->
+            <rect x="280" y="80" width="24" height="500" rx="3" fill="#3A3E4E" stroke="#52586B" stroke-width="2" />
+            <rect x="496" y="80" width="24" height="500" rx="3" fill="#3A3E4E" stroke="#52586B" stroke-width="2" />
+            <!-- Estructura trasera de soporte central -->
+            <path d="M 390,80 L 410,80 L 410,580 L 390,580 Z" fill="#181921" stroke="#2D2F3C" stroke-width="2" />
+            <!-- Viga superior reforzada -->
+            <path d="M 180,80 L 620,80 L 590,120 L 210,120 Z" fill="#2D2F3C" stroke="#484E61" stroke-width="3" />
+            <!-- Brazos extensores superiores -->
+            <path d="M 210,120 L 150,220 L 180,230 L 240,120 Z" fill="#20222B" stroke="#3A3E4E" stroke-width="2" />
+            <path d="M 590,120 L 650,220 L 620,230 L 560,120 Z" fill="#20222B" stroke="#3A3E4E" stroke-width="2" />
+          </g>
+
+          <!-- 2. PARTE: PILA DE PESAS (WEIGHT STACK) - Sube de abajo -->
+          <g id="part-weights" class="machine-part">
+            <!-- Carcasa protectora de pesas translúcida -->
+            <rect x="340" y="180" width="120" height="380" rx="6" fill="rgba(18, 19, 26, 0.75)" stroke="#FF5500" stroke-width="1.5" stroke-dasharray="8,4" />
+            <!-- Bloques de pesas individuales -->
+            <g id="plates">
+              <rect x="348" y="200" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="224" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="248" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="272" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="296" width="104" height="20" rx="2" fill="#1C1D24" stroke="#FF5500" stroke-width="1" filter="url(#neon-glow)" />
+              <rect x="348" y="320" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="344" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="368" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="392" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="416" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="440" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="464" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="488" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+              <rect x="348" y="512" width="104" height="20" rx="2" fill="#1C1D24" stroke="#3A3E4E" stroke-width="1" />
+            </g>
+            <!-- Pin selector de peso cian neón -->
+            <circle cx="400" cy="306" r="6" fill="#00F0FF" filter="url(#cyan-glow)" />
+            <line x1="400" y1="306" x2="455" y2="306" stroke="#00F0FF" stroke-width="3" filter="url(#cyan-glow)" />
+          </g>
+
+          <!-- 3. PARTE: ASIENTO Y ALMOHADILLAS (BENCH/SEAT) - Desliza de la izquierda -->
+          <g id="part-seat" class="machine-part">
+            <!-- Soporte oblicuo de acero del asiento -->
+            <path d="M 230,570 L 320,440 L 345,460 L 255,590 Z" fill="#2D2F3C" stroke="#484E61" stroke-width="2" />
+            <!-- Palanca de ajuste de altura (cian neón) -->
+            <circle cx="280" cy="500" r="5" fill="#00F0FF" filter="url(#cyan-glow)" />
+            <line x1="280" y1="500" x2="310" y2="480" stroke="#00F0FF" stroke-width="3" />
+            <!-- Acolchado del Asiento (Negro y Naranja Deportivo) -->
+            <rect x="250" y="420" width="100" height="25" rx="6" fill="#14151C" stroke="#FF5500" stroke-width="2.5" />
+            <!-- Costura lateral de diseño deportivo -->
+            <path d="M 255,432 Q 300,438 345,432" stroke="#FF5500" stroke-width="1.5" stroke-dasharray="4,2" fill="none" />
+            <!-- Rodillos sujetadores de piernas -->
+            <circle cx="340" cy="350" r="18" fill="#14151C" stroke="#3A3E4E" stroke-width="2" />
+            <circle cx="340" cy="350" r="6" fill="#FF5500" />
+            <circle cx="270" cy="350" r="18" fill="#14151C" stroke="#3A3E4E" stroke-width="2" />
+            <circle cx="270" cy="350" r="6" fill="#FF5500" />
+            <line x1="250" y1="350" x2="360" y2="350" stroke="#3A3E4E" stroke-width="4" />
+          </g>
+
+          <!-- 4. PARTE: CABLES Y POLEAS (PULLEYS) - Deslizan de la derecha -->
+          <g id="part-cables" class="machine-part">
+            <!-- Rueda de polea superior izquierda -->
+            <circle cx="292" cy="100" r="14" fill="#20222B" stroke="#52586B" stroke-width="2" />
+            <circle cx="292" cy="100" r="4" fill="#E8E8EC" />
+            <!-- Rueda de polea superior derecha -->
+            <circle cx="508" cy="100" r="14" fill="#20222B" stroke="#52586B" stroke-width="2" />
+            <circle cx="508" cy="100" r="4" fill="#E8E8EC" />
+            <!-- Ruedas de polea central de carga -->
+            <circle cx="400" cy="150" r="12" fill="#20222B" stroke="#52586B" stroke-width="2" />
+            <circle cx="400" cy="150" r="3" fill="#E8E8EC" />
+            
+            <!-- Cables tensores de acero (Líneas finas de alta precisión) -->
+            <!-- Cable izquierdo de tracción -->
+            <line x1="292" y1="100" x2="292" y2="280" stroke="#8F909A" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="0" />
+            <!-- Cable derecho de tracción -->
+            <line x1="508" y1="100" x2="508" y2="280" stroke="#8F909A" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="0" />
+            <!-- Cable central conectado al weight stack -->
+            <line x1="400" y1="100" x2="400" y2="200" stroke="#8F909A" stroke-width="2.5" />
+            <!-- Puente horizontal de cables -->
+            <line x1="292" y1="88" x2="508" y2="88" stroke="#8F909A" stroke-width="2" />
+          </g>
+
+          <!-- 5. PARTE: BARRA DE JALÓN (LAT BAR) - Cae desde arriba en el centro -->
+          <g id="part-bar" class="machine-part">
+            <!-- Mosquetón conector superior -->
+            <rect x="396" y="274" width="8" height="14" rx="2" fill="#E8E8EC" stroke="#3A3E4E" stroke-width="1" />
+            <!-- Cuerpo Principal de la Barra Ergonómica de Latissimus -->
+            <path d="M 220,290 C 310,295 490,295 580,290 C 600,288 610,310 590,315 C 500,325 300,325 210,315 C 190,310 200,288 220,290 Z" fill="#14151C" stroke="#FF5500" stroke-width="2.5" filter="url(#neon-glow)" />
+            <!-- Mangos de agarre rugosos antideslizantes (extremos) -->
+            <rect x="200" y="292" width="40" height="15" rx="3" fill="#2A2C35" stroke="#3A3E4E" stroke-width="1" />
+            <rect x="560" y="292" width="40" height="15" rx="3" fill="#2A2C35" stroke="#3A3E4E" stroke-width="1" />
+            <!-- Luces LED de control de fuerza activadas en barra -->
+            <line x1="260" y1="305" x2="320" y2="307" stroke="#00F0FF" stroke-width="2" filter="url(#cyan-glow)" />
+            <line x1="480" y1="307" x2="540" y2="305" stroke="#00F0FF" stroke-width="2" filter="url(#cyan-glow)" />
+          </g>
+        </svg>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: CARROUSEL DE PRODUCTOS -->
+  <section id="carousel-section" class="carousel-products-section">
+    <div class="section-header">
+      <span class="section-tag">EQUIPAMIENTO PROFESIONAL</span>
+      <h2 class="section-title">INGENIERÍA PARA TUS RESULTADOS</h2>
+      <p class="section-desc">Tecnología biomecánica avanzada diseñada para atletas exigentes.</p>
+    </div>
+
+    <!-- Contenedor del Carrusel -->
+    <div class="carousel-wrapper">
+      <button class="carousel-nav-btn prev" aria-label="Producto anterior">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      
+      <div class="carousel-track-container">
+        <div class="carousel-track" id="carousel-track">
+          <!-- Producto 1 -->
+          <div class="product-card glass-panel" data-id="1">
+            <div class="product-badge">BEST SELLER</div>
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo vectorial de mancuerna regulable hex -->
+                <rect x="45" y="20" width="10" height="60" fill="#8F909A" rx="2" />
+                <polygon points="25,30 45,35 45,65 25,70" fill="#1C1D24" stroke="#FF5500" stroke-width="2" />
+                <polygon points="75,30 55,35 55,65 75,70" fill="#1C1D24" stroke="#FF5500" stroke-width="2" />
+                <rect x="15" y="35" width="10" height="30" fill="#20222B" rx="1" />
+                <rect x="75" y="35" width="10" height="30" fill="#20222B" rx="1" />
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Mancuernas Regulables Hex</h3>
+              <p class="product-category">PESO LIBRE</p>
+              <div class="product-footer">
+                <span class="product-price">$289.900</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Producto 2 -->
+          <div class="product-card glass-panel" data-id="2">
+            <div class="product-badge">PREMIUM</div>
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo de barra olímpica profesional -->
+                <line x1="5" y1="50" x2="95" y2="50" stroke="#8F909A" stroke-width="4" stroke-linecap="round" />
+                <rect x="20" y="45" width="5" height="10" fill="#FF5500" />
+                <rect x="75" y="45" width="5" height="10" fill="#FF5500" />
+                <circle cx="12" cy="50" r="12" fill="#1C1D24" stroke="#FF5500" stroke-width="1.5" />
+                <circle cx="88" cy="50" r="12" fill="#1C1D24" stroke="#FF5500" stroke-width="1.5" />
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Barra Olímpica 20kg</h3>
+              <p class="product-category">BARRAS Y DISCOS</p>
+              <div class="product-footer">
+                <span class="product-price">$175.000</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Producto 3 -->
+          <div class="product-card glass-panel" data-id="3">
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo de disco bumper -->
+                <circle cx="50" cy="50" r="38" fill="#14151C" stroke="#3A3E4E" stroke-width="3" />
+                <circle cx="50" cy="50" r="30" fill="none" stroke="#FF5500" stroke-width="2" />
+                <circle cx="50" cy="50" r="10" fill="#8F909A" />
+                <text x="50" y="55" font-family="'Barlow Condensed', sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">15 KG</text>
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Disco Bumper Hi-Temp</h3>
+              <p class="product-category">BARRAS Y DISCOS</p>
+              <div class="product-footer">
+                <span class="product-price">$45.000</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Producto 4 -->
+          <div class="product-card glass-panel" data-id="4">
+            <div class="product-badge">NUEVO</div>
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo de banco inclinado multi-posicion -->
+                <line x1="20" y1="75" x2="80" y2="75" stroke="#3A3E4E" stroke-width="4" />
+                <path d="M 25,75 L 35,50 L 70,50 L 75,75" stroke="#3A3E4E" stroke-width="3" fill="none" />
+                <!-- Almohadilla banco -->
+                <rect x="30" y="42" width="45" height="8" rx="2" fill="#14151C" stroke="#FF5500" stroke-width="1.5" transform="rotate(-15, 30, 42)" />
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Banco Multi-Posición</h3>
+              <p class="product-category">BANCOS Y RACKS</p>
+              <div class="product-footer">
+                <span class="product-price">$320.000</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Producto 5 -->
+          <div class="product-card glass-panel" data-id="5">
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo de kettlebell -->
+                <path d="M 35,45 C 35,25 65,25 65,45" stroke="#8F909A" stroke-width="6" fill="none" />
+                <circle cx="50" cy="62" r="24" fill="#1C1D24" stroke="#FF5500" stroke-width="2.5" />
+                <text x="50" y="68" font-family="'Barlow Condensed', sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">16</text>
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Kettlebell Acero 16kg</h3>
+              <p class="product-category">PESO LIBRE</p>
+              <div class="product-footer">
+                <span class="product-price">$62.000</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Producto 6 -->
+          <div class="product-card glass-panel" data-id="6">
+            <div class="product-badge">EDICIÓN ÉLITE</div>
+            <div class="product-image-placeholder">
+              <svg viewBox="0 0 100 100" class="product-svg-icon">
+                <!-- Dibujo miniatura de la estación de poleas -->
+                <rect x="45" y="10" width="10" height="80" fill="#20222B" stroke="#3A3E4E" stroke-width="1" />
+                <line x1="20" y1="15" x2="80" y2="15" stroke="#FF5500" stroke-width="3" />
+                <circle cx="30" cy="30" r="10" fill="#14151C" stroke="#FF5500" stroke-width="1.5" />
+                <line x1="30" y1="30" x2="30" y2="70" stroke="#8F909A" stroke-width="1.5" />
+              </svg>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Estación de Poleas Premium</h3>
+              <p class="product-category">MÁQUINAS</p>
+              <div class="product-footer">
+                <span class="product-price">$1.490.000</span>
+                <button class="btn-buy-icon" aria-label="Agregar al carrito">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-nav-btn next" aria-label="Siguiente producto">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: SELECTOR DINÁMICO CUERPO / MÚSCULOS -->
+  <section id="selector-section" class="interactive-selector-section">
+    <div class="section-header">
+      <span class="section-tag">TECNOLOGÍA BIOMECÁNICA</span>
+      <h2 class="section-title">ENTRENAMIENTO FOCALIZADO</h2>
+      <p class="section-desc">Selecciona tu perfil, elige un grupo muscular y descubre el equipamiento perfecto recomendado por nuestros expertos de Fibra Fitness.</p>
+    </div>
+
+    <!-- Toggle de Género Deslizante Premium -->
+    <div class="gender-toggle-container">
+      <div class="gender-toggle-wrapper">
+        <button class="gender-toggle-btn active" data-gender="male">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          HOMBRE
+        </button>
+        <button class="gender-toggle-btn" data-gender="female">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a7 7 0 0 0-7 7c0 4.14 3.36 7 7 7s7-2.86 7-7a7 7 0 0 0-7-7z"></path><path d="M12 16v6"></path><path d="M9 19h6"></path></svg>
+          MUJER
+        </button>
+        <div class="gender-toggle-slider"></div>
+      </div>
+    </div>
+
+    <!-- Layout Dividido Principal -->
+    <div class="selector-split-layout">
+      
+      <!-- Columna Izquierda: Visualizador del Cuerpo e Interacciones -->
+      <div class="body-viewer-container glass-panel">
+        <div class="muscle-instructions">HAZ CLIC EN UN MÚSCULO PARA ANALIZAR</div>
+        
+        <div class="body-graphics-wrapper">
+          <!-- Silueta Masculina SVG -->
+          <svg id="body-male-svg" class="body-silhouette active" viewBox="0 0 320 500" width="100%" height="100%">
+            <!-- Brillo de selección -->
+            <defs>
+              <filter id="neon-glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComponentTransfer in="blur" result="glow1">
+                  <feFuncA type="linear" slope="0.8"/>
+                </feComponentTransfer>
+                <feMerge>
+                  <feMergeNode in="glow1" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Contorno Cuerpo Humano Estilizado (Hombre) -->
+            <g class="body-base-outline" fill="#14151C" stroke="#3A3E4E" stroke-width="2">
+              <!-- Cabeza y cuello -->
+              <path d="M 160,30 Q 145,30 145,45 Q 145,60 152,65 L 152,72 L 168,72 L 168,65 Q 175,60 175,45 Q 175,30 160,30 Z" />
+              <!-- Trapecios y Hombros -->
+              <path d="M 152,72 Q 130,80 110,95 Q 98,105 100,120 L 108,165" />
+              <path d="M 168,72 Q 190,80 210,95 Q 222,105 220,120 L 212,165" />
+              <!-- Brazos y Manos (Fondo silueta) -->
+              <path d="M 100,120 Q 82,130 75,155 L 60,240 Q 55,260 62,270 L 68,260 L 80,180 L 85,155" />
+              <path d="M 220,120 Q 238,130 245,155 L 260,240 Q 265,260 258,270 L 252,260 L 240,180 L 235,155" />
+              <!-- Tronco, caderas y piernas -->
+              <path d="M 108,165 Q 105,210 112,275 Q 105,330 110,400 L 115,480 L 140,480 L 148,340 L 160,340 L 172,340 L 180,480 L 205,480 L 210,400 Q 215,330 208,275 Q 215,210 212,165 Z" />
+            </g>
+
+            <!-- GRUPOS MUSCULARES INTERACTIVOS (HOMBRE) -->
+            <!-- 1. HOMBROS (DELTOIDES) -->
+            <g class="muscle-group" data-muscle="shoulders">
+              <!-- Hombro Izquierdo -->
+              <path d="M 99,112 Q 91,125 97,145 Q 106,140 108,125 Z" class="muscle-path" />
+              <!-- Hombro Derecho -->
+              <path d="M 221,112 Q 229,125 223,145 Q 214,140 212,125 Z" class="muscle-path" />
+            </g>
+
+            <!-- 2. PECHO (PECTORALES) -->
+            <g class="muscle-group" data-muscle="chest">
+              <!-- Pectoral Izquierdo -->
+              <path d="M 160,110 L 120,110 Q 115,145 130,158 Q 148,160 160,150 Z" class="muscle-path" />
+              <!-- Pectoral Derecho -->
+              <path d="M 160,110 L 200,110 Q 205,145 190,158 Q 172,160 160,150 Z" class="muscle-path" />
+            </g>
+
+            <!-- 3. BRAZOS (BÍCEPS/ANTEBRAZOS) -->
+            <g class="muscle-group" data-muscle="arms">
+              <!-- Bíceps Izquierdo -->
+              <path d="M 98,146 Q 84,175 92,192 Q 102,185 104,166 Z" class="muscle-path" />
+              <!-- Bíceps Derecho -->
+              <path d="M 222,146 Q 236,175 228,192 Q 218,185 216,166 Z" class="muscle-path" />
+              <!-- Antebrazo Izquierdo -->
+              <path d="M 88,193 Q 74,228 85,250 L 92,250 Q 100,215 97,193 Z" class="muscle-path" />
+              <!-- Antebrazo Derecho -->
+              <path d="M 232,193 Q 246,228 235,250 L 228,250 Q 220,215 223,193 Z" class="muscle-path" />
+            </g>
+
+            <!-- 4. ABDOMINALES / ESPALDA (CORE/LATS) -->
+            <!-- Usaremos el Core Frontal como trigger y lo mapeamos a Abdominales/Espalda -->
+            <g class="muscle-group" data-muscle="back">
+              <!-- Serrato / Dorsal Izquierdo Vista Frontal -->
+              <path d="M 120,165 Q 112,205 125,235 L 132,232 Q 120,195 128,168 Z" class="muscle-path" />
+              <!-- Serrato / Dorsal Derecho Vista Frontal -->
+              <path d="M 200,165 Q 208,205 195,235 L 188,232 Q 200,195 192,168 Z" class="muscle-path" />
+              <!-- Core / Abdominales -->
+              <rect x="135" y="165" width="50" height="75" rx="4" class="muscle-path" style="opacity: 0.65;" />
+            </g>
+
+            <!-- 5. PIERNAS (CUÁDRICEPS/PANTORRILLAS) -->
+            <g class="muscle-group" data-muscle="legs">
+              <!-- Cuádriceps Izquierdo -->
+              <path d="M 113,280 Q 108,320 119,380 Q 138,380 148,340 Q 138,290 128,280 Z" class="muscle-path" />
+              <!-- Cuádriceps Derecho -->
+              <path d="M 207,280 Q 212,320 201,380 Q 182,380 172,340 Q 182,290 192,280 Z" class="muscle-path" />
+              <!-- Gemelo Izquierdo -->
+              <path d="M 119,392 Q 112,425 123,470 L 136,470 Q 140,425 137,392 Z" class="muscle-path" />
+              <!-- Gemelo Derecho -->
+              <path d="M 201,392 Q 208,425 197,470 L 184,470 Q 180,425 183,392 Z" class="muscle-path" />
+            </g>
+          </svg>
+
+          <!-- Silueta Femenina SVG -->
+          <svg id="body-female-svg" class="body-silhouette" viewBox="0 0 320 500" width="100%" height="100%">
+            <!-- Contorno Cuerpo Humano Estilizado (Mujer) -->
+            <g class="body-base-outline" fill="#14151C" stroke="#3A3E4E" stroke-width="2">
+              <!-- Cabeza y cuello -->
+              <path d="M 160,35 Q 147,35 147,48 Q 147,61 153,65 L 153,72 L 167,72 L 167,65 Q 173,61 173,48 Q 173,35 160,35 Z" />
+              <!-- Trapecios y Hombros -->
+              <path d="M 153,72 Q 135,80 115,95 Q 105,103 106,116 L 112,160" />
+              <path d="M 167,72 Q 185,80 205,95 Q 215,103 214,116 L 208,160" />
+              <!-- Brazos y Manos (Fondo silueta) -->
+              <path d="M 106,116 Q 90,126 84,148 L 70,230 Q 66,248 72,256 L 77,248 L 88,175 L 92,150" />
+              <path d="M 214,116 Q 230,126 236,148 L 250,230 Q 254,248 248,256 L 243,248 L 232,175 L 228,150" />
+              <!-- Tronco, cintura fina, caderas y piernas -->
+              <path d="M 112,160 Q 118,205 110,245 Q 128,250 135,275 Q 122,330 116,400 L 118,475 L 138,475 L 148,340 L 160,340 L 172,340 L 182,475 L 202,475 L 204,400 Q 198,330 185,275 Q 192,250 210,245 Q 202,205 208,160 Z" />
+            </g>
+
+            <!-- GRUPOS MUSCULARES INTERACTIVOS (MUJER) -->
+            <!-- 1. HOMBROS (DELTOIDES) -->
+            <g class="muscle-group" data-muscle="shoulders">
+              <path d="M 105,110 Q 98,120 102,138 Q 110,135 111,122 Z" class="muscle-path" />
+              <path d="M 215,110 Q 222,120 218,138 Q 210,135 209,122 Z" class="muscle-path" />
+            </g>
+
+            <!-- 2. PECHO (PECTORALES) -->
+            <g class="muscle-group" data-muscle="chest">
+              <path d="M 160,114 L 126,114 Q 122,142 136,154 Q 150,156 160,146 Z" class="muscle-path" />
+              <path d="M 160,114 L 194,114 Q 198,142 184,154 Q 170,156 160,146 Z" class="muscle-path" />
+            </g>
+
+            <!-- 3. BRAZOS (BÍCEPS) -->
+            <g class="muscle-group" data-muscle="arms">
+              <path d="M 103,139 Q 92,165 99,180 Q 106,175 108,158 Z" class="muscle-path" />
+              <path d="M 217,139 Q 228,165 221,180 Q 214,175 212,158 Z" class="muscle-path" />
+              <path d="M 94,181 Q 82,212 91,232 L 97,232 Q 103,202 101,181 Z" class="muscle-path" />
+              <path d="M 226,181 Q 238,212 229,232 L 223,232 Q 217,202 219,181 Z" class="muscle-path" />
+            </g>
+
+            <!-- 4. ABDOMINALES / ESPALDA -->
+            <g class="muscle-group" data-muscle="back">
+              <path d="M 124,160 Q 119,195 128,220 L 134,218 Q 125,185 130,162 Z" class="muscle-path" />
+              <path d="M 196,160 Q 201,195 192,220 L 186,218 Q 195,185 190,162 Z" class="muscle-path" />
+              <rect x="138" y="160" width="44" height="65" rx="3" class="muscle-path" style="opacity: 0.65;" />
+            </g>
+
+            <!-- 5. PIERNAS -->
+            <g class="muscle-group" data-muscle="legs">
+              <path d="M 118,255 Q 112,305 123,375 Q 138,375 146,335 Q 138,275 128,255 Z" class="muscle-path" />
+              <path d="M 202,255 Q 208,305 197,375 Q 182,375 174,335 Q 182,275 192,255 Z" class="muscle-path" />
+              <path d="M 121,385 Q 115,415 125,465 L 135,465 Q 138,415 136,385 Z" class="muscle-path" />
+              <path d="M 199,385 Q 205,415 195,465 L 185,465 Q 182,415 184,385 Z" class="muscle-path" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Leyenda interactiva de músculos -->
+        <div class="muscle-chips-container">
+          <button class="muscle-chip" data-muscle="chest">Pecho</button>
+          <button class="muscle-chip" data-muscle="back">Espalda / Core</button>
+          <button class="muscle-chip" data-muscle="shoulders">Hombros</button>
+          <button class="muscle-chip" data-muscle="arms">Brazos</button>
+          <button class="muscle-chip" data-muscle="legs">Piernas</button>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Recomendación de Productos Dinámicos -->
+      <div class="recommendations-container glass-panel">
+        <div class="recommendations-header">
+          <h3 class="rec-title">PRODUCTOS RECOMENDADOS</h3>
+          <span class="rec-target-label" id="active-muscle-label">PECHO</span>
+        </div>
+        
+        <!-- Contenedor dinámico de listado de productos -->
+        <div class="recommendations-list" id="recommendations-list">
+          <!-- Se completa dinámicamente con boceto.js -->
+        </div>
+
+        <div class="recommendations-empty" id="recommendations-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <p>Selecciona un grupo muscular de la silueta interactiva para cargar las recomendaciones biomecánicas.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Pie de página premium -->
+  <footer class="footer-boceto">
+    <p>&copy; 2026 Fibra Fitness Genesis. Todos los derechos reservados. Boceto Interactivo de Alta Fidelidad.</p>
+  </footer>
+
+  <!-- Scripts del Boceto -->
+  <script src="boceto.js"></script>
+</body>
+</html>
