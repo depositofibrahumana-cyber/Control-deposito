@@ -45,16 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
       videoId: 'nnG27_6EPTk',
       playerVars: {
         autoplay: 0,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        modestbranding: 1,
-        rel: 0,
-        showinfo: 0,
+        controls: 0,         // Sin controles
+        disablekb: 1,        // Sin atajos de teclado
+        fs: 0,               // Sin pantalla completa
+        modestbranding: 1,   // Branding mínimo
+        rel: 0,              // Sin videos relacionados al final
+        showinfo: 0,         // Sin info del video/canal
+        iv_load_policy: 3,   // Sin anotaciones
+        cc_load_policy: 0,   // Sin subtítulos automáticos
         mute: 1,
         playsinline: 1,
         playlist: 'nnG27_6EPTk',
-        loop: 1
+        loop: 1,
+        origin: window.location.origin
       },
       events: {
         onReady: (event) => {
