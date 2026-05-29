@@ -212,7 +212,11 @@ h1, h2, h3, h4, .section-tag, .product-price, .nav-logo {
 /* Textos Superpuestos */
 .hero-text-overlay {
   position: absolute;
-  top: 140px;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1000px;
   text-align: center;
   z-index: 10;
   pointer-events: none;
@@ -262,25 +266,21 @@ h1, h2, h3, h4, .section-tag, .product-price, .nav-logo {
   50% { transform: translateY(8px); opacity: 1; }
 }
 
-/* Visor de la Máquina */
+/* Visor de la Máquina (Video de Fondo Completo) */
 .machine-viewer {
   position: absolute;
-  bottom: -20px;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 900px;
-  height: 80vh;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  height: 100%;
+  z-index: 2;
 }
 
 .machine-video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.6));
-  border-radius: var(--radius-xl);
+  object-fit: cover;
+  filter: brightness(0.55);
   will-change: filter, transform;
 }
 

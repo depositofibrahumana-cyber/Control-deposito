@@ -38,14 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
         video.currentTime = currentTime;
       }
 
-      // Efecto estético de brillo y escala neón cuando llega al final del armado (progress -> 1)
+      // Efecto estético de brillo de fondo neón cuando llega al final del armado (progress -> 1)
       const progress = currentTime / video.duration;
       if (progress >= 0.98) {
-        video.style.filter = 'drop-shadow(0 0 25px rgba(255, 85, 0, 0.45)) drop-shadow(0 15px 40px rgba(0, 0, 0, 0.7))';
-        video.style.transform = 'scale(1.02)';
+        video.style.filter = 'brightness(0.68) contrast(1.05)';
+        video.style.transform = 'scale(1.01)';
         video.style.transition = 'filter 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
       } else {
-        video.style.filter = 'drop-shadow(0 15px 40px rgba(0, 0, 0, 0.6))';
+        video.style.filter = 'brightness(0.55)';
         video.style.transform = 'scale(1)';
         video.style.transition = 'none';
       }
