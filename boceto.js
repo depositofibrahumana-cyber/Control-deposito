@@ -6,41 +6,129 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ─────────────────────────────────────────────
-  // 1. REPRODUCCIÓN DE VIDEO POR SCROLL (SCROLL SCRUBBING CON SUAVIZADO)
+  // 1. CONTROL DE VIDEO POR SCROLL SNAP / LOCK (HIJACKING PREMIUM)
   // ─────────────────────────────────────────────
   const video = document.getElementById('scroll-video');
+  const heroSection = document.getElementById('hero-section');
+  
+  let progress = 0; // Progreso exacto del video (0.0 a 1.0)
   let targetTime = 0;
   let currentTime = 0;
+  let isHeroLocked = true; // El Hero inicia bloqueado/inmóvil
 
-  function onScrollVideo() {
-    if (!video) return;
+  function lockScroll() {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+  }
 
-    // Rango de scroll dedicado al Hero (220vh total, 120vh de recorrido útil)
-    const scrollRange = window.innerHeight * 1.2;
-    const scrollY = window.scrollY;
+  function unlockScroll() {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
 
-    // Calcular progreso exacto entre 0.0 y 1.0
-    const progress = Math.min(Math.max(scrollY / scrollRange, 0), 1);
+  // Inicialmente bloqueamos el scroll si estamos en el Hero
+  if (window.scrollY < 20) {
+    isHeroLocked = true;
+    lockScroll();
+  } else {
+    isHeroLocked = false;
+    unlockScroll();
+  }
+
+  // A) Capturar Rueda del Ratón (Wheel Hijacking)
+  window.addEventListener('wheel', (e) => {
+    if (!isHeroLocked || !video) return;
+
+    // Prevenir el scroll real de la página
+    e.preventDefault();
+
+    // Dividimos por 2000 para lograr que la reproducción progrese muy LENTAMENTE y con precisión
+    const delta = e.deltaY / 2000;
+    progress = Math.min(Math.max(progress + delta, 0), 1);
 
     if (video.duration) {
       targetTime = progress * video.duration;
     }
+
+    // Si el video llega al final (100% de la animación) y sigue scrolleando hacia abajo, desbloquea y baja
+    if (progress >= 0.999 && e.deltaY > 0) {
+      unlockAndTransitionDown();
+    }
+  }, { passive: false });
+
+  // B) Soporte para Dispositivos Táctiles (Swipe Hijacking)
+  let touchStartY = 0;
+  window.addEventListener('touchstart', (e) => {
+    if (!isHeroLocked) return;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isHeroLocked || !video) return;
+
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchStartY - touchY; // Positivo si desliza hacia arriba (bajar scroll)
+
+    if (Math.abs(deltaY) > 5) {
+      // Prevenir el scroll nativo de la pantalla
+      e.preventDefault();
+
+      // Ajustamos la sensibilidad táctil
+      const delta = deltaY / 800;
+      progress = Math.min(Math.max(progress + delta, 0), 1);
+
+      if (video.duration) {
+        targetTime = progress * video.duration;
+      }
+
+      touchStartY = touchY; // Actualizar base táctil
+
+      if (progress >= 0.999 && deltaY > 0) {
+        unlockAndTransitionDown();
+      }
+    }
+  }, { passive: false });
+
+  function unlockAndTransitionDown() {
+    isHeroLocked = false;
+    unlockScroll();
+    
+    // Desliza suavemente a la sección del carrusel de productos
+    const carouselSection = document.getElementById('carousel-section');
+    if (carouselSection) {
+      carouselSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
-  // Loop de renderizado continuo para lograr un suavizado premium (Eased Scrubbing)
+  // C) Capturar cuando el usuario sube al tope de la página para re-bloquear y dar reversa
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+
+    // Si llega al tope absoluto del Hero, re-enganchamos el bloqueo
+    if (scrollY <= 5 && !isHeroLocked) {
+      isHeroLocked = true;
+      progress = 1.0; // Inicia totalmente ensamblado
+      if (video && video.duration) {
+        targetTime = video.duration;
+        currentTime = video.duration;
+      }
+      lockScroll();
+    }
+  }, { passive: true });
+
+  // Loop de renderizado continuo para el suavizado de video (Eased Scrubbing)
   function renderScrubLoop() {
     if (video && video.duration) {
-      // Easing / Interpolación lineal de amortiguación (0.1 = 10% de la distancia por cuadro)
+      // Easing / Interpolación lineal de amortiguación (10% por frame)
       currentTime += (targetTime - currentTime) * 0.1;
 
-      // Solo asignamos si el cambio es sustancial, para evitar sobrecarga y jitter de GPU
       if (Math.abs(targetTime - currentTime) > 0.001) {
         video.currentTime = currentTime;
       }
 
-      // Efecto estético de brillo de fondo neón cuando llega al final del armado (progress -> 1)
-      const progress = currentTime / video.duration;
-      if (progress >= 0.98) {
+      // Animación de brillo neón de fondo al completarse
+      const progressRatio = currentTime / video.duration;
+      if (progressRatio >= 0.98) {
         video.style.filter = 'brightness(0.68) contrast(1.05)';
         video.style.transform = 'scale(1.01)';
         video.style.transition = 'filter 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
@@ -53,15 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(renderScrubLoop);
   }
 
-  // Evento de scroll
-  window.addEventListener('scroll', onScrollVideo, { passive: true });
-  
-  // Asegurar que cuando los metadatos estén cargados, se sincronice la primera toma
+  // Asegurar la inicialización correcta con metadatos cargados
   if (video) {
     video.addEventListener('loadedmetadata', () => {
-      onScrollVideo();
+      progress = 0;
+      targetTime = 0;
+      currentTime = 0;
+      video.currentTime = 0;
     });
-    // Iniciar loop de suavizado
+    // Forzar el disparo inicial
     requestAnimationFrame(renderScrubLoop);
   }
 
