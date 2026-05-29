@@ -6,70 +6,64 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ─────────────────────────────────────────────
-  // 1. ENSAMBLAJE DE MÁQUINA POR SCROLL
+  // 1. REPRODUCCIÓN DE VIDEO POR SCROLL (SCROLL SCRUBBING CON SUAVIZADO)
   // ─────────────────────────────────────────────
-  const gymSvg = document.getElementById('gym-machine-svg');
-  const partFrame = document.getElementById('part-frame');
-  const partWeights = document.getElementById('part-weights');
-  const partSeat = document.getElementById('part-seat');
-  const partCables = document.getElementById('part-cables');
-  const partBar = document.getElementById('part-bar');
+  const video = document.getElementById('scroll-video');
+  let targetTime = 0;
+  let currentTime = 0;
 
-  function updateMachineAssembly() {
-    if (!gymSvg) return;
+  function onScrollVideo() {
+    if (!video) return;
 
-    // Rango de scroll dedicado al Hero
-    // 220vh es el alto del Hero. El scroll disponible es 120vh.
+    // Rango de scroll dedicado al Hero (220vh total, 120vh de recorrido útil)
     const scrollRange = window.innerHeight * 1.2;
     const scrollY = window.scrollY;
 
-    // Calcular progreso entre 0.0 y 1.0
+    // Calcular progreso exacto entre 0.0 y 1.0
     const progress = Math.min(Math.max(scrollY / scrollRange, 0), 1);
 
-    // Aplicar transformaciones tridimensionales interpoladas (hardware accelerated)
-    
-    // 1. Estructura Principal (Frame): Cae verticalmente y gana opacidad
-    const frameY = (1 - progress) * -150;
-    partFrame.style.transform = `translate3d(0, ${frameY}px, 0)`;
-    partFrame.style.opacity = progress < 0.1 ? progress * 10 : 1;
-
-    // 2. Bloque de Pesas (Weights): Sube verticalmente
-    const weightsY = (1 - progress) * 250;
-    partWeights.style.transform = `translate3d(0, ${weightsY}px, 0)`;
-    partWeights.style.opacity = progress < 0.2 ? progress * 5 : 1;
-
-    // 3. Asiento y almohadillas (Seat): Desliza desde la izquierda
-    const seatX = (1 - progress) * -350;
-    partSeat.style.transform = `translate3d(${seatX}px, 0, 0)`;
-    partSeat.style.opacity = progress < 0.25 ? progress * 4 : 1;
-
-    // 4. Cables y Poleas (Cables): Deslizan desde la derecha
-    const cablesX = (1 - progress) * 350;
-    partCables.style.transform = `translate3d(${cablesX}px, 0, 0)`;
-    partCables.style.opacity = progress < 0.3 ? progress * 3.3 : 1;
-
-    // 5. Barra de Jalón (Lat Bar): Cae del techo y escala de 0.4 a 1
-    const barY = (1 - progress) * -380;
-    const barScale = 0.4 + (progress * 0.6);
-    partBar.style.transform = `translate3d(0, ${barY}px, 0) scale3d(${barScale}, ${barScale}, 1)`;
-    partBar.style.opacity = progress < 0.35 ? progress * 2.85 : 1;
-
-    // Efecto estético: Brillo extra neón cuando está 100% armado
-    if (progress >= 0.98) {
-      gymSvg.style.filter = 'drop-shadow(0 0 25px rgba(255, 85, 0, 0.45)) drop-shadow(0 15px 40px rgba(0, 0, 0, 0.7))';
-      gymSvg.style.transform = 'scale(1.02)';
-      gymSvg.style.transition = 'filter 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
-    } else {
-      gymSvg.style.filter = 'drop-shadow(0 15px 40px rgba(0, 0, 0, 0.6))';
-      gymSvg.style.transform = 'scale(1)';
-      gymSvg.style.transition = 'none';
+    if (video.duration) {
+      targetTime = progress * video.duration;
     }
   }
 
-  // Escuchar evento de scroll con passive listener para alto rendimiento
-  window.addEventListener('scroll', updateMachineAssembly, { passive: true });
-  // Disparar inicialmente para cargar las piezas dispersas
-  updateMachineAssembly();
+  // Loop de renderizado continuo para lograr un suavizado premium (Eased Scrubbing)
+  function renderScrubLoop() {
+    if (video && video.duration) {
+      // Easing / Interpolación lineal de amortiguación (0.1 = 10% de la distancia por cuadro)
+      currentTime += (targetTime - currentTime) * 0.1;
+
+      // Solo asignamos si el cambio es sustancial, para evitar sobrecarga y jitter de GPU
+      if (Math.abs(targetTime - currentTime) > 0.001) {
+        video.currentTime = currentTime;
+      }
+
+      // Efecto estético de brillo y escala neón cuando llega al final del armado (progress -> 1)
+      const progress = currentTime / video.duration;
+      if (progress >= 0.98) {
+        video.style.filter = 'drop-shadow(0 0 25px rgba(255, 85, 0, 0.45)) drop-shadow(0 15px 40px rgba(0, 0, 0, 0.7))';
+        video.style.transform = 'scale(1.02)';
+        video.style.transition = 'filter 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
+      } else {
+        video.style.filter = 'drop-shadow(0 15px 40px rgba(0, 0, 0, 0.6))';
+        video.style.transform = 'scale(1)';
+        video.style.transition = 'none';
+      }
+    }
+    requestAnimationFrame(renderScrubLoop);
+  }
+
+  // Evento de scroll
+  window.addEventListener('scroll', onScrollVideo, { passive: true });
+  
+  // Asegurar que cuando los metadatos estén cargados, se sincronice la primera toma
+  if (video) {
+    video.addEventListener('loadedmetadata', () => {
+      onScrollVideo();
+    });
+    // Iniciar loop de suavizado
+    requestAnimationFrame(renderScrubLoop);
+  }
 
 
   // ─────────────────────────────────────────────
