@@ -6,15 +6,19 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // ─────────────────────────────────────────────
-  // 1. CONTROL DE VIDEO POR SCROLL SNAP / LOCK (HIJACKING PREMIUM)
+  // 1. INTEGRACIÓN DEL REPRODUCTOR DE YOUTUBE CON SCROLL-LOCK (ZERO FREEZES)
   // ─────────────────────────────────────────────
-  const video = document.getElementById('scroll-video');
-  const heroSection = document.getElementById('hero-section');
-  
-  let progress = 0; // Progreso exacto del video (0.0 a 1.0)
-  let targetTime = 0;
-  let currentTime = 0;
-  let isHeroLocked = true; // El Hero inicia bloqueado/inmóvil
+  // Cargar API de YouTube de forma dinámica
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  let player;
+  let pauseTimeout;
+  let progressInterval;
+  let progress = 0;
+  let isHeroLocked = true;
 
   function lockScroll() {
     document.documentElement.style.overflow = 'hidden';
@@ -35,24 +39,99 @@ document.addEventListener('DOMContentLoaded', () => {
     unlockScroll();
   }
 
+  // Función global requerida por la API de YouTube
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('youtube-player', {
+      videoId: 'nnG27_6EPTk',
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        modestbranding: 1,
+        rel: 0,
+        showinfo: 0,
+        mute: 1,
+        playsinline: 1,
+        playlist: 'nnG27_6EPTk',
+        loop: 1
+      },
+      events: {
+        onReady: (event) => {
+          event.target.mute();
+          // Velocidad lenta (0.5x) para un armado sumamente estético y pausado de la máquina
+          event.target.setPlaybackRate(0.5);
+          
+          // Forzar un play/pause rápido para que YouTube cargue el buffer de fondo
+          event.target.playVideo();
+          setTimeout(() => {
+            event.target.pauseVideo();
+            startProgressTracking();
+          }, 150);
+        }
+      }
+    });
+  };
+
+  // Monitoreo constante del tiempo de reproducción para filtros y transición
+  function startProgressTracking() {
+    clearInterval(progressInterval);
+    progressInterval = setInterval(() => {
+      if (player && player.getCurrentTime && player.getDuration) {
+        const time = player.getCurrentTime();
+        const duration = player.getDuration();
+        
+        if (duration > 0) {
+          progress = time / duration;
+          const playerElement = document.getElementById('youtube-player');
+          
+          if (playerElement) {
+            // Efecto estético neón al final del armado
+            if (progress >= 0.95) {
+              playerElement.style.filter = 'brightness(0.68) contrast(1.05)';
+              playerElement.style.transform = 'scale(1.01)';
+              playerElement.style.transition = 'filter 0.5s ease, transform 0.5s ease';
+            } else {
+              playerElement.style.filter = 'brightness(0.52)';
+              playerElement.style.transform = 'scale(1)';
+              playerElement.style.transition = 'none';
+            }
+          }
+
+          // Si el video llega cerca del final, liberamos el scroll y avanzamos al carrusel
+          if (time >= duration - 0.6 && isHeroLocked) {
+            clearInterval(progressInterval);
+            unlockAndTransitionDown();
+          }
+        }
+      }
+    }, 100);
+  }
+
   // A) Capturar Rueda del Ratón (Wheel Hijacking)
   window.addEventListener('wheel', (e) => {
-    if (!isHeroLocked || !video) return;
+    if (!isHeroLocked || !player) return;
 
-    // Prevenir el scroll real de la página
+    // Previene el desplazamiento vertical nativo de la pantalla
     e.preventDefault();
 
-    // Dividimos por 2000 para lograr que la reproducción progrese muy LENTAMENTE y con precisión
-    const delta = e.deltaY / 2000;
-    progress = Math.min(Math.max(progress + delta, 0), 1);
-
-    if (video.duration) {
-      targetTime = progress * video.duration;
-    }
-
-    // Si el video llega al final (100% de la animación) y sigue scrolleando hacia abajo, desbloquea y baja
-    if (progress >= 0.999 && e.deltaY > 0) {
-      unlockAndTransitionDown();
+    if (e.deltaY > 0) {
+      // Scroll hacia Abajo -> Reproduce el video a velocidad nativa (60 FPS sin buffering)
+      if (player.playVideo) {
+        player.playVideo();
+        clearTimeout(pauseTimeout);
+        pauseTimeout = setTimeout(() => {
+          if (player.pauseVideo) player.pauseVideo();
+        }, 180); // Se pausa 180ms después de detener el scroll
+      }
+    } else if (e.deltaY < 0) {
+      // Scroll hacia Arriba -> Reversa interactiva controlando el seekTo en pasos de 0.25 seg
+      if (player.getCurrentTime && player.seekTo) {
+        const currentTime = player.getCurrentTime();
+        const newTime = Math.max(currentTime - 0.25, 0);
+        player.seekTo(newTime, true);
+        progress = newTime / player.getDuration();
+      }
     }
   }, { passive: false });
 
@@ -64,28 +143,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   window.addEventListener('touchmove', (e) => {
-    if (!isHeroLocked || !video) return;
+    if (!isHeroLocked || !player) return;
 
     const touchY = e.touches[0].clientY;
-    const deltaY = touchStartY - touchY; // Positivo si desliza hacia arriba (bajar scroll)
+    const deltaY = touchStartY - touchY;
 
     if (Math.abs(deltaY) > 5) {
-      // Prevenir el scroll nativo de la pantalla
       e.preventDefault();
 
-      // Ajustamos la sensibilidad táctil
-      const delta = deltaY / 800;
-      progress = Math.min(Math.max(progress + delta, 0), 1);
-
-      if (video.duration) {
-        targetTime = progress * video.duration;
+      if (deltaY > 0) {
+        // Deslizar arriba (bajar scroll) -> Reproduce
+        if (player.playVideo) {
+          player.playVideo();
+          clearTimeout(pauseTimeout);
+          pauseTimeout = setTimeout(() => {
+            if (player.pauseVideo) player.pauseVideo();
+          }, 180);
+        }
+      } else {
+        // Deslizar abajo (subir scroll) -> Reversa
+        if (player.getCurrentTime && player.seekTo) {
+          const currentTime = player.getCurrentTime();
+          const newTime = Math.max(currentTime - 0.25, 0);
+          player.seekTo(newTime, true);
+          progress = newTime / player.getDuration();
+        }
       }
-
-      touchStartY = touchY; // Actualizar base táctil
-
-      if (progress >= 0.999 && deltaY > 0) {
-        unlockAndTransitionDown();
-      }
+      touchStartY = touchY;
     }
   }, { passive: false });
 
@@ -93,65 +177,34 @@ document.addEventListener('DOMContentLoaded', () => {
     isHeroLocked = false;
     unlockScroll();
     
-    // Desliza suavemente a la sección del carrusel de productos
+    if (player && player.pauseVideo) {
+      player.pauseVideo();
+    }
+
     const carouselSection = document.getElementById('carousel-section');
     if (carouselSection) {
       carouselSection.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  // C) Capturar cuando el usuario sube al tope de la página para re-bloquear y dar reversa
+  // C) Capturar cuando el usuario sube al tope de la página para re-bloquear
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
 
-    // Si llega al tope absoluto del Hero, re-enganchamos el bloqueo
     if (scrollY <= 5 && !isHeroLocked) {
       isHeroLocked = true;
-      progress = 1.0; // Inicia totalmente ensamblado
-      if (video && video.duration) {
-        targetTime = video.duration;
-        currentTime = video.duration;
-      }
       lockScroll();
+      if (player && player.seekTo && player.getDuration) {
+        const duration = player.getDuration();
+        if (duration > 0) {
+          player.seekTo(duration - 1, true);
+          player.pauseVideo();
+          progress = 1.0;
+        }
+      }
+      startProgressTracking();
     }
   }, { passive: true });
-
-  // Loop de renderizado continuo para el suavizado de video (Eased Scrubbing)
-  function renderScrubLoop() {
-    if (video && video.duration) {
-      // Easing / Interpolación lineal de amortiguación (10% por frame)
-      currentTime += (targetTime - currentTime) * 0.1;
-
-      if (Math.abs(targetTime - currentTime) > 0.001) {
-        video.currentTime = currentTime;
-      }
-
-      // Animación de brillo neón de fondo al completarse
-      const progressRatio = currentTime / video.duration;
-      if (progressRatio >= 0.98) {
-        video.style.filter = 'brightness(0.68) contrast(1.05)';
-        video.style.transform = 'scale(1.01)';
-        video.style.transition = 'filter 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
-      } else {
-        video.style.filter = 'brightness(0.55)';
-        video.style.transform = 'scale(1)';
-        video.style.transition = 'none';
-      }
-    }
-    requestAnimationFrame(renderScrubLoop);
-  }
-
-  // Asegurar la inicialización correcta con metadatos cargados
-  if (video) {
-    video.addEventListener('loadedmetadata', () => {
-      progress = 0;
-      targetTime = 0;
-      currentTime = 0;
-      video.currentTime = 0;
-    });
-    // Forzar el disparo inicial
-    requestAnimationFrame(renderScrubLoop);
-  }
 
 
   // ─────────────────────────────────────────────
